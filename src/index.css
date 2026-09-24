@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Nunito", ui-rounded, system-ui, sans-serif;
+
+  --color-primary: #4d96ff;
+  --color-primary-soft: #e8f1ff;
+  --color-primary-hover: #3a82eb;
+  --color-secondary: #6bcb77;
+  --color-secondary-soft: #e8f8ea;
+  --color-accent: #ffd93d;
+  --color-accent-soft: #fff8d6;
+  --color-alert: #ff9f5a;
+  --color-alert-soft: #fff0e6;
+  --color-bg: #fafbff;
+  --color-bg-calm: #eff3f8;
+  --color-ink: #2e2e3a;
+  --color-ink-muted: #5c5c6e;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f2;
+
+  --shadow-soft: 0 8px 28px rgba(46, 46, 58, 0.08);
+  --shadow-lift: 0 12px 32px rgba(77, 150, 255, 0.18);
+
+  --ease-calm: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-calm: 280ms;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --page-bg: var(--color-bg);
+    --motion: 1;
+  }
+
+  html.modo-calma {
+    --page-bg: var(--color-bg-calm);
+    --motion: 0;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--color-ink);
+    background: var(--page-bg);
+    scroll-behavior: smooth;
+  }
+
+  html.modo-calma {
+    scroll-behavior: auto;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100svh;
+    background:
+      radial-gradient(ellipse 80% 50% at 10% -10%, rgba(77, 150, 255, 0.16), transparent),
+      radial-gradient(ellipse 60% 40% at 90% 0%, rgba(107, 203, 119, 0.12), transparent),
+      var(--page-bg);
+  }
+
+  html.modo-calma body {
+    background: var(--page-bg);
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --motion: 0;
+    }
+  }
+}
+
+@layer utilities {
+  .transition-calm {
+    transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+    transition-duration: calc(var(--duration-calm) * var(--motion));
+    transition-timing-function: var(--ease-calm);
+  }
+
+  .motion-safe-only {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes path-draw {
+  from {
+    stroke-dashoffset: 240;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-float {
+  animation: float-soft calc(4s * var(--motion, 1)) ease-in-out infinite;
+}
+
+html.modo-calma .animate-float,
+@media (prefers-reduced-motion: reduce) {
+  .animate-float {
+    animation: none;
+  }
+}
