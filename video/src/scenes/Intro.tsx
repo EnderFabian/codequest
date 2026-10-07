@@ -7,6 +7,7 @@ import {
 } from "remotion";
 import { Background } from "../components/Background";
 import { Robot } from "../components/Robot";
+import { Sfx } from "../components/Sfx";
 import { colors, fontFamily } from "../theme";
 
 // Escena 1: el robot saluda y aparece el nombre del juego.
@@ -24,6 +25,7 @@ export const Intro: React.FC = () => {
 
   return (
     <Background>
+      <Sfx name="pop" at={25} />
       <AbsoluteFill
         style={{
           flexDirection: "row",

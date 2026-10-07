@@ -7,6 +7,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { Background } from "../components/Background";
+import { Sfx } from "../components/Sfx";
 import { colors, fontFamily } from "../theme";
 
 // Escena 3: los tres tipos de usuario (mismos textos que la página de inicio).
@@ -45,6 +46,9 @@ export const Roles: React.FC = () => {
 
   return (
     <Background>
+      {roles.map((role, i) => (
+        <Sfx key={role.title} name="pop" at={20 + i * 15} volume={0.45} />
+      ))}
       <AbsoluteFill
         style={{
           fontFamily,

@@ -7,6 +7,7 @@ import {
 } from "remotion";
 import { Background } from "../components/Background";
 import { Robot } from "../components/Robot";
+import { Sfx } from "../components/Sfx";
 import { Star } from "../components/Star";
 import { colors, fontFamily } from "../theme";
 
@@ -32,6 +33,10 @@ export const Celebrate: React.FC = () => {
 
   return (
     <Background>
+      <Sfx name="success" at={0} volume={0.55} />
+      {[0, 1, 2].map((i) => (
+        <Sfx key={i} name="chime" at={36 + i * 12} volume={0.35} />
+      ))}
       <AbsoluteFill
         style={{ fontFamily, alignItems: "center", justifyContent: "center" }}
       >
@@ -83,16 +88,23 @@ export const Celebrate: React.FC = () => {
           </div>
           <div style={{ display: "flex", gap: 22 }}>
             {[0, 1, 2].map((i) => {
-              const fill = interpolate(frame, [30 + i * 12, 42 + i * 12], [0, 1], {
-                extrapolateLeft: "clamp",
-                extrapolateRight: "clamp",
-              });
+              const fill = interpolate(
+                frame,
+                [30 + i * 12, 42 + i * 12],
+                [0, 1],
+                {
+                  extrapolateLeft: "clamp",
+                  extrapolateRight: "clamp",
+                },
+              );
               return (
                 <Star
                   key={i}
                   size={96}
                   color={fill > 0.5 ? colors.accent : colors.border}
-                  style={{ transform: `scale(${1 + Math.sin(fill * Math.PI) * 0.3})` }}
+                  style={{
+                    transform: `scale(${1 + Math.sin(fill * Math.PI) * 0.3})`,
+                  }}
                 />
               );
             })}

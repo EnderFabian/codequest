@@ -8,6 +8,7 @@ import {
 } from "remotion";
 import { Background } from "../components/Background";
 import { Robot } from "../components/Robot";
+import { Sfx } from "../components/Sfx";
 import { Star } from "../components/Star";
 import { colors, fontFamily } from "../theme";
 
@@ -131,9 +132,16 @@ export const Blocks: React.FC = () => {
   const startActive = frame >= RUN_START - 15 && frame < RUN_START;
 
   const boardIn = spring({ frame: frame - 30, fps, config: { damping: 20 } });
-  const goalPop = spring({ frame: frame - RUN_END, fps, config: { damping: 9 } });
+  const goalPop = spring({
+    frame: frame - RUN_END,
+    fps,
+    config: { damping: 9 },
+  });
 
-  const caption = frame < RUN_START - 15 ? "Arma tu programa con bloques" : "¡Y mira cómo funciona!";
+  const caption =
+    frame < RUN_START - 15
+      ? "Arma tu programa con bloques"
+      : "¡Y mira cómo funciona!";
   const captionKey = frame < RUN_START - 15 ? 0 : RUN_START - 15;
   const captionIn = interpolate(frame - captionKey, [0, 15], [0, 1], clamp);
 
@@ -141,6 +149,22 @@ export const Blocks: React.FC = () => {
 
   return (
     <Background>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <Sfx
+          key={`pop-${i}`}
+          name="pop"
+          at={BLOCK_APPEAR + i * BLOCK_GAP}
+          volume={0.45}
+        />
+      ))}
+      {POSITIONS.slice(1).map((to, k) => (
+        <Sfx
+          key={`move-${k}`}
+          name={to - POSITIONS[k] > 1 ? "jump" : "step"}
+          at={RUN_START + k * STEP}
+        />
+      ))}
+      <Sfx name="chime" at={RUN_END} />
       <AbsoluteFill style={{ fontFamily, padding: "70px 80px" }}>
         <div
           style={{
@@ -177,12 +201,37 @@ export const Blocks: React.FC = () => {
               boxShadow: "0 8px 28px rgba(46, 46, 58, 0.08)",
             }}
           >
-            <Block index={0} label="▶ Iniciar" color={colors.secondary} active={startActive} />
-            <Block index={1} label="Repetir 2 veces" color={colors.alert} active={running && step < 2}>
-              <Block index={2} label="Avanzar 1" color={colors.primary} active={activeBlock === 2} />
+            <Block
+              index={0}
+              label="▶ Iniciar"
+              color={colors.secondary}
+              active={startActive}
+            />
+            <Block
+              index={1}
+              label="Repetir 2 veces"
+              color={colors.alert}
+              active={running && step < 2}
+            >
+              <Block
+                index={2}
+                label="Avanzar 1"
+                color={colors.primary}
+                active={activeBlock === 2}
+              />
             </Block>
-            <Block index={3} label="Saltar 1" color="#9b72e8" active={activeBlock === 3} />
-            <Block index={4} label="Avanzar 1" color={colors.primary} active={activeBlock === 4} />
+            <Block
+              index={3}
+              label="Saltar 1"
+              color="#9b72e8"
+              active={activeBlock === 3}
+            />
+            <Block
+              index={4}
+              label="Avanzar 1"
+              color={colors.primary}
+              active={activeBlock === 4}
+            />
           </div>
 
           {/* Tablero */}

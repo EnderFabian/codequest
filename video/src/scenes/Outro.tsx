@@ -7,6 +7,7 @@ import {
 } from "remotion";
 import { Background } from "../components/Background";
 import { Robot } from "../components/Robot";
+import { Sfx } from "../components/Sfx";
 import { colors, fontFamily } from "../theme";
 
 // Escena 5: cierre con el nombre y el mensaje del proyecto.
@@ -23,6 +24,7 @@ export const Outro: React.FC = () => {
 
   return (
     <Background>
+      <Sfx name="chime" at={12} volume={0.4} />
       <AbsoluteFill
         style={{
           fontFamily,
@@ -31,7 +33,12 @@ export const Outro: React.FC = () => {
           textAlign: "center",
         }}
       >
-        <div style={{ opacity: robotIn, transform: `scale(${0.7 + robotIn * 0.3})` }}>
+        <div
+          style={{
+            opacity: robotIn,
+            transform: `scale(${0.7 + robotIn * 0.3})`,
+          }}
+        >
           <Robot pose="happy" size={380} />
         </div>
         <div

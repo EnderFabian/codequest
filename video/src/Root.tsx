@@ -23,11 +23,36 @@ export const RemotionRoot: React.FC = () => {
         {...size}
       />
       <Folder name="Escenas">
-        <Composition id="Intro" component={Intro} durationInFrames={SCENES.intro} {...size} />
-        <Composition id="Bloques" component={Blocks} durationInFrames={SCENES.blocks} {...size} />
-        <Composition id="Roles" component={Roles} durationInFrames={SCENES.roles} {...size} />
-        <Composition id="Celebracion" component={Celebrate} durationInFrames={SCENES.celebrate} {...size} />
-        <Composition id="Cierre" component={Outro} durationInFrames={SCENES.outro} {...size} />
+        <Composition
+          id="Intro"
+          component={Intro}
+          durationInFrames={SCENES.intro}
+          {...size}
+        />
+        <Composition
+          id="Bloques"
+          component={Blocks}
+          durationInFrames={SCENES.blocks}
+          {...size}
+        />
+        <Composition
+          id="Roles"
+          component={Roles}
+          durationInFrames={SCENES.roles}
+          {...size}
+        />
+        <Composition
+          id="Celebracion"
+          component={Celebrate}
+          durationInFrames={SCENES.celebrate}
+          {...size}
+        />
+        <Composition
+          id="Cierre"
+          component={Outro}
+          durationInFrames={SCENES.outro}
+          {...size}
+        />
       </Folder>
     </>
   );
