@@ -1,6 +1,6 @@
 import { ArrowRight, Blocks, HeartHandshake, LineChart, Puzzle } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { HeroVisual } from '../components/landing/HeroVisual'
+import { HeroBoard } from '../components/landing/HeroBoard'
 import { Button } from '../components/ui/Button'
 import { Surface } from '../components/ui/Surface'
 import { useCalmMode } from '../context/CalmModeContext'
@@ -60,8 +60,8 @@ export function LandingPage() {
             </div>
           </div>
 
-          <div className="justify-self-center lg:justify-self-end">
-            <HeroVisual calm={calmMode} />
+          <div className="w-full justify-self-center lg:justify-self-end">
+            <HeroBoard calm={calmMode} />
           </div>
         </div>
       </section>

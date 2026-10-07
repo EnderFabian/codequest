@@ -18,7 +18,7 @@ const BLOCK_DEFS = [
     args0: [{ type: 'field_number', name: 'PASOS', value: 1, min: 1, max: 10 }],
     previousStatement: null,
     nextStatement: null,
-    colour: '#8A9A4B',
+    colour: '#22A06B',
     tooltip: 'Mueve al personaje hacia adelante el número de casillas indicado.',
   },
   {
@@ -27,7 +27,7 @@ const BLOCK_DEFS = [
     args0: [{ type: 'field_number', name: 'PASOS', value: 1, min: 1, max: 3 }],
     previousStatement: null,
     nextStatement: null,
-    colour: '#8A9A4B',
+    colour: '#8B5CF6',
     tooltip: 'El personaje salta hacia adelante, pasando por encima de huecos o paredes.',
   },
   {
@@ -40,7 +40,7 @@ const BLOCK_DEFS = [
     ],
     previousStatement: null,
     nextStatement: null,
-    colour: '#4A9C7D',
+    colour: '#F07C2A',
     tooltip: 'Repite las instrucciones de adentro el número de veces indicado.',
   },
   {
@@ -53,7 +53,7 @@ const BLOCK_DEFS = [
     ],
     previousStatement: null,
     nextStatement: null,
-    colour: '#4A9C7D',
+    colour: '#E0558F',
     tooltip: 'Si la condición es verdadera, ejecuta las instrucciones de adentro.',
   },
   {
@@ -68,28 +68,28 @@ const BLOCK_DEFS = [
     ],
     previousStatement: null,
     nextStatement: null,
-    colour: '#4A9C7D',
+    colour: '#E0558F',
     tooltip: 'Si es verdadero ejecuta la primera parte; si no, la segunda.',
   },
   {
     type: 'sensor_hueco_adelante',
     message0: '¿Hay hueco adelante?',
     output: 'Boolean',
-    colour: '#A68A5A',
+    colour: '#0E9AA7',
     tooltip: 'Verdadero si la siguiente casilla es un hueco.',
   },
   {
     type: 'sensor_pared_adelante',
     message0: '¿Hay pared adelante?',
     output: 'Boolean',
-    colour: '#A68A5A',
+    colour: '#0E9AA7',
     tooltip: 'Verdadero si la siguiente casilla es una pared.',
   },
   {
     type: 'sensor_estrella_adelante',
     message0: '¿Hay estrella adelante?',
     output: 'Boolean',
-    colour: '#A68A5A',
+    colour: '#0E9AA7',
     tooltip: 'Verdadero si la siguiente casilla tiene una estrella.',
   },
   {
@@ -100,7 +100,7 @@ const BLOCK_DEFS = [
       { type: 'input_value', name: 'B', check: 'Boolean' },
     ],
     output: 'Boolean',
-    colour: '#A68A5A',
+    colour: '#3F6FD8',
   },
   {
     type: 'logica_o',
@@ -110,14 +110,14 @@ const BLOCK_DEFS = [
       { type: 'input_value', name: 'B', check: 'Boolean' },
     ],
     output: 'Boolean',
-    colour: '#A68A5A',
+    colour: '#3F6FD8',
   },
   {
     type: 'logica_no',
     message0: 'No %1',
     args0: [{ type: 'input_value', name: 'A', check: 'Boolean' }],
     output: 'Boolean',
-    colour: '#A68A5A',
+    colour: '#3F6FD8',
   },
   {
     type: 'crear_variable_contador',
@@ -128,7 +128,7 @@ const BLOCK_DEFS = [
     ],
     previousStatement: null,
     nextStatement: null,
-    colour: '#3FA6A6',
+    colour: '#B45309',
   },
   {
     type: 'cambiar_variable',
@@ -139,7 +139,7 @@ const BLOCK_DEFS = [
     ],
     previousStatement: null,
     nextStatement: null,
-    colour: '#3FA6A6',
+    colour: '#B45309',
   },
   {
     type: 'mostrar_mensaje',
@@ -147,12 +147,12 @@ const BLOCK_DEFS = [
     args0: [{ type: 'field_input', name: 'TEXTO', text: '¡Genial!' }],
     previousStatement: null,
     nextStatement: null,
-    colour: '#4A4A8A',
+    colour: '#5B6CF0',
   },
 ]
 
 let definedVersion = 0
-const BLOCKS_VERSION = 3
+const BLOCKS_VERSION = 4
 
 export function ensureBlocksDefined() {
   if (definedVersion === BLOCKS_VERSION) return

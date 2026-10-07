@@ -13,6 +13,21 @@ type Props = {
 
 Blockly.setLocale(En as unknown as { [key: string]: string })
 
+// Tema con la fuente y los colores de CodeQuest.
+const THEME = Blockly.Theme.defineTheme('codequest', {
+  name: 'codequest',
+  base: Blockly.Themes.Classic,
+  fontStyle: { family: 'Nunito, ui-rounded, system-ui, sans-serif', weight: '800', size: 14 },
+  componentStyles: {
+    workspaceBackgroundColour: '#fbfcff',
+    toolboxBackgroundColour: '#eef3fb',
+    flyoutBackgroundColour: '#eef3fb',
+    flyoutOpacity: 1,
+    scrollbarColour: '#cdd8ea',
+    insertionMarkerColour: '#4d96ff',
+  },
+})
+
 export function BlocklyWorkspace({ availableBlocks, onReady, onDispose }: Props) {
   const hostRef = useRef<HTMLDivElement>(null)
   const onReadyRef = useRef(onReady)
@@ -32,6 +47,7 @@ export function BlocklyWorkspace({ availableBlocks, onReady, onDispose }: Props)
       grid: { spacing: 24, length: 2, colour: '#E2E8F2', snap: true },
       zoom: { controls: true, wheel: false, startScale: 1.05, maxScale: 1.5, minScale: 0.6 },
       renderer: 'zelos',
+      theme: THEME,
       // Íconos y sonidos de Blockly servidos desde la app (sin depender de internet).
       media: `${import.meta.env.BASE_URL}blockly-media/`,
     })
@@ -65,7 +81,7 @@ export function BlocklyWorkspace({ availableBlocks, onReady, onDispose }: Props)
   return (
     <div
       ref={hostRef}
-      className="h-[min(70vh,620px)] min-h-[480px] w-full overflow-hidden rounded-3xl border-2 border-border bg-surface"
+      className="h-[min(70vh,620px)] min-h-[480px] w-full overflow-hidden rounded-3xl border-[3px] border-[#e6edf8] bg-surface shadow-[inset_0_2px_8px_rgba(46,70,140,0.06)]"
       aria-label="Área de bloques de programación"
     />
   )

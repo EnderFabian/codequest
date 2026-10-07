@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { ROBOT_FRAMES, ROBOT_POSES, type RobotPose } from '../../assets/robot'
 import './ProgrammingRobot.css'
 
@@ -130,6 +130,29 @@ function BlockChip({
 export function ProgrammingRobot() {
   const [i, setI] = useState(0)
   const [reduced, setReduced] = useState(false)
+  const stageRef = useRef<HTMLElement>(null)
+
+  // La escena se inclina en 3D siguiendo el puntero.
+  useEffect(() => {
+    const el = stageRef.current
+    if (!el || reduced) return
+    let frame = 0
+    const onMove = (e: PointerEvent) => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        const r = el.getBoundingClientRect()
+        const dx = (e.clientX - (r.left + r.width / 2)) / r.width
+        const dy = (e.clientY - (r.top + r.height / 2)) / r.height
+        el.style.setProperty('--stage-ry', `${Math.max(-1, Math.min(1, dx)) * 8}deg`)
+        el.style.setProperty('--stage-rx', `${Math.max(-1, Math.min(1, dy)) * -6}deg`)
+      })
+    }
+    window.addEventListener('pointermove', onMove, { passive: true })
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('pointermove', onMove)
+    }
+  }, [reduced])
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -182,7 +205,7 @@ export function ProgrammingRobot() {
     .join(' ')
 
   return (
-    <aside className="cq2-stage" aria-hidden="true">
+    <aside ref={stageRef} className="cq2-stage" aria-hidden="true">
       <div className={`cq2-world ${reduced ? 'cq2-reduced' : ''}`}>
         <div className="cq2-sky" />
         <div className="cq2-grid" />

@@ -3,8 +3,11 @@ import { nivel1 } from './nivel1'
 import { nivel2 } from './nivel2'
 import { nivel3 } from './nivel3'
 import { nivel4 } from './nivel4'
+import { nivel5 } from './nivel5'
+import { nivel6 } from './nivel6'
+import { nivel7 } from './nivel7'
 
-export const LEVELS: LevelDef[] = [nivel1, nivel2, nivel3, nivel4]
+export const LEVELS: LevelDef[] = [nivel1, nivel2, nivel3, nivel4, nivel5, nivel6, nivel7]
 
 export function getLevel(levelId: string): LevelDef | undefined {
   return LEVELS.find((l) => l.levelId === levelId)

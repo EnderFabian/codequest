@@ -201,7 +201,7 @@ html.modo-calma .animate-float,
     inset 0 2px 0 #fff;
 }
 .world-card.is-locked .world-card-inner {
-  filter: grayscale(0.85) brightness(0.98);
+  filter: saturate(0.4);
 }
 
 .world-icon {
@@ -304,5 +304,30 @@ html.modo-calma .world-card:focus-within .world-card-inner {
   .world-card:hover .world-card-inner,
   .world-card:focus-within .world-card-inner {
     transform: none;
+  }
+}
+
+/* Globo de diálogo del robot en los retos */
+.speech {
+  position: relative;
+  padding: 0.75rem 1.1rem;
+  border-radius: 1.25rem;
+  background: var(--color-surface);
+  border: 3px solid var(--color-primary-soft);
+  box-shadow: 0 10px 24px rgba(77, 150, 255, 0.14);
+}
+@media (min-width: 640px) {
+  .speech::before {
+    content: '';
+    position: absolute;
+    left: -11px;
+    top: 1.1rem;
+    width: 16px;
+    height: 16px;
+    background: var(--color-surface);
+    border-left: 3px solid var(--color-primary-soft);
+    border-bottom: 3px solid var(--color-primary-soft);
+    border-radius: 0 0 0 4px;
+    transform: rotate(45deg);
   }
 }

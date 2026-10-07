@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { ProgrammingRobot } from '../components/auth/ProgrammingRobot'
+import { RobotAvatar } from '../components/robot/RobotAvatar'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { Surface } from '../components/ui/Surface'
@@ -195,7 +196,13 @@ export function LoginPage() {
   return (
     <main className="mx-auto flex min-h-[70vh] w-full max-w-6xl flex-col justify-center overflow-x-hidden px-5 py-10">
       <div className="grid w-full items-center gap-8 md:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] md:gap-8 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)] xl:gap-14">
-        <div className="mx-auto w-full max-w-xl lg:mx-0">{loginForm}</div>
+        <div className="mx-auto w-full max-w-xl lg:mx-0">
+          {/* En celular la escena grande no cabe: el robot saluda encima del formulario */}
+          <div className="mb-2 flex justify-center pt-16 md:hidden">
+            <RobotAvatar pose={['wave', 'happy']} size={150} say="¡Hola! Entra para jugar conmigo." />
+          </div>
+          {loginForm}
+        </div>
         <ProgrammingRobot />
       </div>
     </main>

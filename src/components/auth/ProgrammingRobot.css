@@ -1,12 +1,15 @@
 /* Escena viva CodeQuest — mascota 3D oficial (PNG) */
 
 .cq2-stage {
+  --stage-rx: 0deg;
+  --stage-ry: 0deg;
   pointer-events: none;
   user-select: none;
   display: none;
   width: 100%;
   max-width: 560px;
   margin-inline: auto;
+  perspective: 1200px;
 }
 
 @media (min-width: 768px) {
@@ -16,6 +19,8 @@
 }
 
 .cq2-world {
+  transform: rotateX(var(--stage-rx)) rotateY(var(--stage-ry));
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 0.95;
@@ -508,4 +513,8 @@
     animation: none !important;
     transition: none !important;
   }
+}
+
+html.modo-calma .cq2-world {
+  transform: none;
 }

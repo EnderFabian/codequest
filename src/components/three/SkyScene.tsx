@@ -29,7 +29,7 @@ function makeItems(count: number): Item[] {
     const side = i % 2 === 0 ? -1 : 1
     return {
       kind,
-      pos: [side * (0.82 + r(1) * 0.22), -0.9 + r(2) * 1.8, -2 - r(3) * 6],
+      pos: [side * (1.0 + r(1) * 0.16), -0.9 + r(2) * 1.8, -2 - r(3) * 6],
       rot: [r(4) * Math.PI, r(5) * Math.PI, r(6) * Math.PI],
       scale: 0.45 + r(7) * 0.55,
       color: BLOCK_COLORS[i % BLOCK_COLORS.length],
@@ -109,8 +109,7 @@ function Floating({ item, calm }: { item: Item; calm: boolean }) {
 
 /** Mueve la cámara apenas siguiendo al puntero (efecto de profundidad). */
 function Parallax({ calm }: { calm: boolean }) {
-  const { camera, pointer } = useThree()
-  useFrame((_, dt) => {
+  useFrame(({ camera, pointer }, dt) => {
     if (calm) return
     camera.position.x = THREE.MathUtils.damp(camera.position.x, pointer.x * 0.8, 2, dt)
     camera.position.y = THREE.MathUtils.damp(camera.position.y, pointer.y * 0.5, 2, dt)
