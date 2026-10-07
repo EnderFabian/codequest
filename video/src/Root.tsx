@@ -1,57 +1,34 @@
 import "./index.css";
 import { Composition, Folder } from "remotion";
-import { HelloWorld } from "./HelloWorld";
-import { Logo } from "./HelloWorld/Logo";
-import { Title } from "./HelloWorld/Title";
+import { CodeQuestPromo } from "./CodeQuestPromo";
+import { Blocks } from "./scenes/Blocks";
+import { Celebrate } from "./scenes/Celebrate";
+import { Intro } from "./scenes/Intro";
+import { Outro } from "./scenes/Outro";
+import { Roles } from "./scenes/Roles";
+import { FPS, SCENES, TOTAL_DURATION } from "./theme";
 
-// Each <Composition> is an entry in the sidebar!
+// Cada <Composition> aparece en la barra lateral de Remotion Studio.
+// Para renderizar el video completo: npm run render
+
+const size = { fps: FPS, width: 1920, height: 1080 };
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
-      <Folder name="Elements">
-        <Composition
-          id="Logo"
-          component={Logo}
-          durationInFrames={150}
-          fps={30}
-          width={1920}
-          height={1080}
-          defaultProps={{
-            logoColor1: "#91EAE4",
-            logoColor2: "#86A8E7",
-          }}
-        />
-        <Composition
-          id="Title"
-          component={Title}
-          durationInFrames={115}
-          fps={30}
-          width={1920}
-          height={1080}
-          defaultProps={{
-            titleText: "Welcome to Remotion",
-            titleColor: "#000000",
-          }}
-        />
-      </Folder>
       <Composition
-        // You can take the "id" to render a video:
-        // bunx remotion render HelloWorld
-        id="HelloWorld"
-        component={HelloWorld}
-        durationInFrames={150}
-        fps={30}
-        width={1920}
-        height={1080}
-        // You can override these props for each render:
-        // https://www.remotion.dev/docs/parametrized-rendering
-        defaultProps={{
-          titleText: "Welcome to Remotion",
-          titleColor: "#000000",
-        }}
+        id="CodeQuestPromo"
+        component={CodeQuestPromo}
+        durationInFrames={TOTAL_DURATION}
+        {...size}
       />
-
+      <Folder name="Escenas">
+        <Composition id="Intro" component={Intro} durationInFrames={SCENES.intro} {...size} />
+        <Composition id="Bloques" component={Blocks} durationInFrames={SCENES.blocks} {...size} />
+        <Composition id="Roles" component={Roles} durationInFrames={SCENES.roles} {...size} />
+        <Composition id="Celebracion" component={Celebrate} durationInFrames={SCENES.celebrate} {...size} />
+        <Composition id="Cierre" component={Outro} durationInFrames={SCENES.outro} {...size} />
+      </Folder>
     </>
   );
 };
