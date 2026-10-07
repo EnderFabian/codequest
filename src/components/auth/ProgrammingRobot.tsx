@@ -1,13 +1,9 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
-import robotCelebrate from '../../../frames/robot_celebrate.png'
-import robotFly from '../../../frames/robot_fly.png'
-import robotHappy from '../../../frames/robot_happy.png'
-import robotIdle from '../../../frames/robot_idle.png'
-import robotWave from '../../../frames/robot_wave.png'
+import { ROBOT_FRAMES, ROBOT_POSES, type RobotPose } from '../../assets/robot'
 import './ProgrammingRobot.css'
 
 type BlockKind = 'start' | 'move' | 'say' | 'loop'
-type Pose = 'idle' | 'fly' | 'happy' | 'wave' | 'celebrate'
+type Pose = RobotPose
 type Facing = 'left' | 'right'
 
 type Step = {
@@ -24,15 +20,8 @@ type Step = {
   seeking?: boolean
 }
 
-const FRAMES: Record<Pose, string> = {
-  idle: robotIdle,
-  fly: robotFly,
-  happy: robotHappy,
-  wave: robotWave,
-  celebrate: robotCelebrate,
-}
-
-const POSES: Pose[] = ['idle', 'fly', 'happy', 'wave', 'celebrate']
+const FRAMES = ROBOT_FRAMES
+const POSES = ROBOT_POSES
 
 const META: Record<BlockKind, { label: string; color: string; icon: string }> = {
   start: { label: 'Iniciar', color: '#FFC83D', icon: '⚑' },

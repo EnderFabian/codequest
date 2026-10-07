@@ -20,7 +20,22 @@ import type { StepResult, Tile } from '../../game/types'
 import { Button } from '../ui/Button'
 import { Surface } from '../ui/Surface'
 import { BlocklyWorkspace } from './BlocklyWorkspace'
-import { GridWorld } from './GridWorld'
+import { GridWorld, type BoardAnim } from './GridWorld'
+
+/** Junta los pasos de un mismo salto (saltar n) en un solo movimiento. */
+function mergeJumps(steps: StepResult[]) {
+  const out: { step: StepResult; count: number }[] = []
+  for (const s of steps) {
+    const last = out[out.length - 1]
+    if (last && s.jumpId != null && last.step.jumpId === s.jumpId) {
+      last.step = s
+      last.count += 1
+    } else {
+      out.push({ step: s, count: 1 })
+    }
+  }
+  return out
+}
 
 function sleep(ms: number) {
   return new Promise<void>((resolve) => {
@@ -46,6 +61,12 @@ export function ChallengePage() {
   const [feedback, setFeedback] = useState('')
   const [won, setWon] = useState(false)
   const [error, setError] = useState('')
+  const [anim, setAnim] = useState<BoardAnim>({ key: 0, kind: 'idle', durationMs: 400 })
+  const animKey = useRef(0)
+  const playAnim = useCallback((kind: BoardAnim['kind'], durationMs: number) => {
+    animKey.current += 1
+    setAnim({ key: animKey.current, kind, durationMs })
+  }, [])
 
   const challengeIndex = useMemo(() => {
     if (!data) return 0
@@ -71,7 +92,8 @@ export function ChallengePage() {
     runningRef.current = false
     runIdRef.current += 1
     startedAt.current = Date.now()
-  }, [levelId, retoId])
+    playAnim('idle', 300)
+  }, [levelId, retoId, playAnim])
 
   const handleRun = useCallback(async () => {
     setError('')
@@ -133,10 +155,17 @@ export function ChallengePage() {
     setRunning(true)
 
     try {
-      const delay = calmMode ? 560 : 450
-      for (let i = 0; i < steps.length; i += 1) {
+      const delay = calmMode ? 620 : 480
+      const frames = mergeJumps(steps)
+      let prevPos = frames[0]?.step.position ?? 0
+      for (let i = 0; i < frames.length; i += 1) {
         if (runIdRef.current !== runId) return
-        const s = steps[i]
+        const { step: s, count } = frames[i]
+        const moved = s.position !== prevPos
+        const dur = delay * count
+        if (s.status === 'fail_hole') playAnim('fall', delay * 2)
+        else if (s.status === 'fail_wall') playAnim('bump', delay * 1.4)
+        else if (moved) playAnim(s.move === 'jump' ? 'jump' : 'walk', dur)
         setStep({
           position: s.position,
           tiles: [...s.tiles],
@@ -145,7 +174,12 @@ export function ChallengePage() {
           message: s.message,
         })
         if (s.message) setFeedback(s.message)
-        await sleep(delay)
+        prevPos = s.position
+        await sleep(s.status === 'fail_hole' ? delay * 2 : moved || s.message ? dur : 60)
+        if (s.status === 'success') {
+          playAnim('success', 1400)
+          await sleep(300)
+        }
       }
 
       if (runIdRef.current !== runId) return
@@ -186,7 +220,7 @@ export function ChallengePage() {
         setRunning(false)
       }
     }
-  }, [user, levelId, retoId, calmMode])
+  }, [user, levelId, retoId, calmMode, playAnim])
 
   useEffect(() => {
     ;(window as unknown as { __cqRun?: () => void }).__cqRun = () => {
@@ -228,6 +262,7 @@ export function ChallengePage() {
     setError('')
     setRunning(false)
     startedAt.current = Date.now()
+    playAnim('idle', 300)
   }
 
   return (
@@ -267,9 +302,11 @@ export function ChallengePage() {
         <div className="order-2 flex flex-col gap-4">
           <GridWorld
             tiles={displayTiles}
+            baseTiles={baseGrid.map((t) => (t === 'M' ? '.' : t)) as Tile[]}
             position={position}
+            status={step?.status ?? 'running'}
+            anim={anim}
             calm={calmMode}
-            moving={running}
             message={feedback || step?.message}
           />
           <div className="flex flex-wrap gap-3">

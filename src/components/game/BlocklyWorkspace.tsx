@@ -32,6 +32,8 @@ export function BlocklyWorkspace({ availableBlocks, onReady, onDispose }: Props)
       grid: { spacing: 24, length: 2, colour: '#E2E8F2', snap: true },
       zoom: { controls: true, wheel: false, startScale: 1.05, maxScale: 1.5, minScale: 0.6 },
       renderer: 'zelos',
+      // Íconos y sonidos de Blockly servidos desde la app (sin depender de internet).
+      media: `${import.meta.env.BASE_URL}blockly-media/`,
     })
 
     ensureIniciarBlock(workspace)

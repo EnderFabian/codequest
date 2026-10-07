@@ -65,6 +65,10 @@ export type StepResult = {
   starsCollected: number
   message?: string
   status: 'running' | 'success' | 'fail_hole' | 'fail_wall' | 'incomplete'
+  /** Cómo llegó el personaje a esta casilla (para animarlo). */
+  move?: 'walk' | 'jump'
+  /** Pasos con el mismo jumpId son un solo salto (saltar n). */
+  jumpId?: number
 }
 
 export type AttemptRecord = {

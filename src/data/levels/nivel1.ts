@@ -35,13 +35,13 @@ export const nivel1: LevelDef = {
       retoId: '1.5',
       grid: ['M', '.', '_', '.', '.', '_', '.', '.', 'F'],
       instruccion: 'Este camino tiene dos huecos.',
-      solucionEjemplo: ['avanzar(1)', 'saltar(1)', 'avanzar(2)', 'saltar(1)', 'avanzar(2)'],
+      solucionEjemplo: ['avanzar(1)', 'saltar(1)', 'avanzar(1)', 'saltar(1)', 'avanzar(2)'],
     },
     {
       retoId: '1.6',
       grid: ['M', '.', '.', '_', '.', '.', '.', '_', '.', 'F'],
       instruccion: 'Planea todo tu camino antes de correr el programa.',
-      solucionEjemplo: ['avanzar(2)', 'saltar(1)', 'avanzar(3)', 'saltar(1)', 'avanzar(1)'],
+      solucionEjemplo: ['avanzar(2)', 'saltar(1)', 'avanzar(2)', 'saltar(1)', 'avanzar(1)'],
     },
   ],
 }

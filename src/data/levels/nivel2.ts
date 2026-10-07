@@ -12,12 +12,12 @@ export const nivel2: LevelDef = {
       grid: ['M', '.', '.', '.', '.', '.', '.', 'F'],
       instruccion:
         'Este camino es largo, pero todas las casillas son iguales. En vez de muchos Avanzar, usa un solo bloque Repetir.',
-      solucionEjemplo: ['repetir(6) { avanzar(1) }'],
+      solucionEjemplo: ['repetir(7) { avanzar(1) }'],
       maxTopBlocks: 2,
     },
     {
       retoId: '2.2',
-      grid: ['M', '.', '_', '.', '_', '.', '_', '.', 'F'],
+      grid: ['M', '.', '_', '.', '.', '_', '.', '.', '_', '.', 'F'],
       instruccion: 'Este camino repite el mismo patrón: avanzar y saltar. Repítelo con un solo bucle.',
       solucionEjemplo: ['repetir(3) { avanzar(1); saltar(1) }', 'avanzar(1)'],
     },
@@ -29,7 +29,7 @@ export const nivel2: LevelDef = {
     },
     {
       retoId: '2.4',
-      grid: ['M', '.', '.', '.', '.', '_', '.', '_', '.', 'F'],
+      grid: ['M', '.', '.', '.', '.', '_', '.', '.', '_', '.', 'F'],
       instruccion: 'Puedes usar varios bloques Repetir, uno después de otro.',
       solucionEjemplo: [
         'repetir(4) { avanzar(1) }',
@@ -40,7 +40,7 @@ export const nivel2: LevelDef = {
       retoId: '2.5',
       grid: ['M', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'F'],
       instruccion: 'Encuentra tú mismo el patrón que se repite y arma el bucle más corto posible.',
-      solucionEjemplo: ['repetir(11) { avanzar(1) }'],
+      solucionEjemplo: ['repetir(12) { avanzar(1) }'],
     },
   ],
 }

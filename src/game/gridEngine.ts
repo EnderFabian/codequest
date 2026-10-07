@@ -54,6 +54,7 @@ export function runProgram(
   tiles[pos] = '.'
 
   const stars = { n: 0 }
+  let jumps = 0
   const vars: Record<string, number> = {}
   const steps: StepResult[] = [
     { position: pos, tiles: cloneTiles(tiles), starsCollected: 0, status: 'running' },
@@ -108,15 +109,17 @@ export function runProgram(
     collectIfStar(tiles, pos, stars)
     if (tile === 'F') {
       succeed()
+      steps[steps.length - 1].move = 'walk'
       return false
     }
-    push()
+    push({ move: 'walk' })
     return true
   }
 
   const jumpForward = (pasos: number): boolean => {
     // saltar(n) avanza n+1 casillas en el aire (salta por encima de n obstáculos)
     const distancia = pasos + 1
+    const jumpId = ++jumps
     for (let i = 0; i < distancia; i += 1) {
       const next = pos + 1
       if (next >= tiles.length) {
@@ -125,7 +128,7 @@ export function runProgram(
       }
       pos = next
       collectIfStar(tiles, pos, stars)
-      push()
+      push({ move: 'jump', jumpId })
       if (tiles[pos] === 'F') {
         succeed()
         return false

@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { ChallengePage } from './components/game/ChallengePage'
 import { Header } from './components/layout/Header'
@@ -10,11 +10,14 @@ import { LoginPage } from './pages/LoginPage'
 import { PadreHomePage } from './pages/PadreHomePage'
 import { ProfesionalHomePage } from './pages/ProfesionalHomePage'
 
+// La vista previa publicada como página estática usa rutas con # (VITE_HASH_ROUTER=1).
+const Router = import.meta.env.VITE_HASH_ROUTER ? HashRouter : BrowserRouter
+
 export default function App() {
   return (
     <CalmModeProvider>
       <AuthProvider>
-        <BrowserRouter>
+        <Router>
           <div className="flex min-h-svh flex-col">
             <Header />
             <Routes>
@@ -55,7 +58,7 @@ export default function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
-        </BrowserRouter>
+        </Router>
       </AuthProvider>
     </CalmModeProvider>
   )

@@ -17,7 +17,7 @@ export function Header() {
           className="flex items-center gap-3 rounded-2xl no-underline transition-calm hover:opacity-90"
           aria-label="CodeQuest — inicio"
         >
-          <img src="/favicon.svg" alt="" width={40} height={40} className="rounded-xl" />
+          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width={40} height={40} className="rounded-xl" />
           <span className="text-xl font-extrabold tracking-tight text-ink sm:text-2xl">
             CodeQuest
           </span>
