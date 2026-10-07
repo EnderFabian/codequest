@@ -2,6 +2,7 @@ import { BrowserRouter, HashRouter, Navigate, Route, Routes } from 'react-router
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { ChallengePage } from './components/game/ChallengePage'
 import { Header } from './components/layout/Header'
+import { RouteSky } from './components/three/RouteSky'
 import { AuthProvider } from './context/AuthContext'
 import { CalmModeProvider } from './context/CalmModeContext'
 import { EstudianteHomePage } from './pages/EstudianteHomePage'
@@ -18,7 +19,8 @@ export default function App() {
     <CalmModeProvider>
       <AuthProvider>
         <Router>
-          <div className="flex min-h-svh flex-col">
+          <RouteSky />
+          <div className="relative z-10 flex min-h-svh flex-col">
             <Header />
             <Routes>
               <Route path="/" element={<LandingPage />} />

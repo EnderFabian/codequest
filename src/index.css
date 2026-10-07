@@ -21,6 +21,10 @@
 
   --shadow-soft: 0 8px 28px rgba(46, 46, 58, 0.08);
   --shadow-lift: 0 12px 32px rgba(77, 150, 255, 0.18);
+  /* Sombra "clay": volumen suave por fuera y brillo por dentro */
+  --shadow-clay:
+    0 14px 34px rgba(46, 70, 140, 0.12), 0 3px 0 rgba(46, 70, 140, 0.05),
+    inset 0 -4px 0 rgba(77, 150, 255, 0.06), inset 0 2px 0 rgba(255, 255, 255, 0.9);
 
   --ease-calm: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-calm: 280ms;
@@ -122,5 +126,183 @@ html.modo-calma .animate-float,
 @media (prefers-reduced-motion: reduce) {
   .animate-float {
     animation: none;
+  }
+}
+
+/* ───────── Estilo "clay" (3D suave de juguete) ───────── */
+
+.clay-btn {
+  box-shadow:
+    0 5px 0 #2f6fd0,
+    0 12px 24px rgba(77, 150, 255, 0.28);
+  transition:
+    transform calc(0.18s * var(--motion)) ease,
+    box-shadow calc(0.18s * var(--motion)) ease,
+    background-color 0.2s ease;
+}
+.clay-btn:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+}
+.clay-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #2f6fd0;
+}
+
+.stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem 0.5rem 0.5rem;
+  border-radius: 1.1rem;
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid #fff;
+  box-shadow:
+    0 4px 0 #dbe3f0,
+    0 10px 20px rgba(46, 70, 140, 0.08);
+}
+.stat-chip-icon {
+  display: inline-flex;
+  width: 2.2rem;
+  height: 2.2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.8rem;
+  background: var(--color-bg);
+}
+
+/* Tarjeta de mundo: se inclina en 3D al pasar el puntero */
+.world-card {
+  perspective: 1100px;
+}
+.world-card-inner {
+  height: 100%;
+  border-radius: 2rem;
+  padding: 1.5rem;
+  background:
+    radial-gradient(120% 90% at 100% 0%, var(--world-soft), transparent 60%),
+    rgba(255, 255, 255, 0.9);
+  border: 3px solid #fff;
+  box-shadow:
+    0 8px 0 color-mix(in srgb, var(--world) 22%, #e6ecf6),
+    0 22px 40px rgba(46, 70, 140, 0.12),
+    inset 0 2px 0 #fff;
+  transform-style: preserve-3d;
+  transition:
+    transform calc(0.45s * var(--motion)) cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s ease;
+}
+.world-card:hover .world-card-inner,
+.world-card:focus-within .world-card-inner {
+  transform: rotateX(6deg) rotateY(-5deg) translateY(-4px);
+  box-shadow:
+    0 12px 0 color-mix(in srgb, var(--world) 30%, #e6ecf6),
+    0 30px 50px rgba(46, 70, 140, 0.16),
+    inset 0 2px 0 #fff;
+}
+.world-card.is-locked .world-card-inner {
+  filter: grayscale(0.85) brightness(0.98);
+}
+
+.world-icon {
+  display: inline-flex;
+  flex: none;
+  width: 3.4rem;
+  height: 3.4rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1.1rem;
+  color: #fff;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--world) 75%, #fff), var(--world));
+  box-shadow:
+    0 5px 0 var(--world-ledge),
+    inset 0 2px 0 rgba(255, 255, 255, 0.45);
+  transform: translateZ(30px);
+}
+
+.badge-medal {
+  display: inline-flex;
+  flex: none;
+  width: 2.8rem;
+  height: 2.8rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: #8a5a00;
+  background: radial-gradient(circle at 35% 30%, #fff6c8, #ffd93d 55%, #f2b705);
+  box-shadow:
+    0 4px 0 #c99600,
+    0 8px 16px rgba(201, 150, 0, 0.3);
+  transform: translateZ(40px);
+}
+
+/* Camino de retos en zigzag */
+.reto-path {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 0.75rem;
+  padding-top: 1.6rem;
+}
+.reto-path > li {
+  transform: translateY(calc(sin(var(--i) * 1.4rad) * 10px));
+}
+.reto-node {
+  display: inline-flex;
+  width: 3.4rem;
+  height: 3.4rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  transition:
+    transform calc(0.2s * var(--motion)) ease,
+    box-shadow 0.2s ease;
+}
+.reto-node.is-open {
+  color: #fff;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--world) 70%, #fff), var(--world));
+  box-shadow:
+    0 5px 0 var(--world-ledge),
+    0 10px 18px color-mix(in srgb, var(--world) 35%, transparent),
+    inset 0 2px 0 rgba(255, 255, 255, 0.5);
+}
+.reto-node.is-done {
+  color: #c99600;
+  background: radial-gradient(circle at 35% 30%, #fffbe8, #fff3b0);
+  box-shadow:
+    0 5px 0 #f2d35c,
+    inset 0 2px 0 #fff;
+}
+.reto-node.is-closed {
+  color: color-mix(in srgb, var(--world) 45%, #9aa3b8);
+  background: #f1f4fa;
+  box-shadow: 0 4px 0 #e0e6f0;
+}
+a:hover > .reto-node.is-open,
+a:hover > .reto-node.is-done,
+a:focus-visible > .reto-node {
+  transform: translateY(-3px) scale(1.06);
+}
+a:active > .reto-node {
+  transform: translateY(3px);
+}
+
+.reto-robot {
+  position: absolute !important;
+  left: 50%;
+  bottom: 78%;
+  margin-left: -32px;
+  z-index: 2;
+}
+
+html.modo-calma .world-card:hover .world-card-inner,
+html.modo-calma .world-card:focus-within .world-card-inner {
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-card:hover .world-card-inner,
+  .world-card:focus-within .world-card-inner {
+    transform: none;
   }
 }

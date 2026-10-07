@@ -15,7 +15,7 @@ export function Surface({
   return (
     <Tag
       className={[
-        'rounded-3xl bg-surface p-6 shadow-[var(--shadow-soft)]',
+        'rounded-3xl border-[3px] border-white/80 bg-surface/90 p-6 shadow-[var(--shadow-clay)] backdrop-blur-sm',
         'transition-calm',
         className,
       ].join(' ')}

@@ -1,0 +1,234 @@
+.cq-robot {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  position: relative;
+  width: var(--robot-size);
+  height: var(--robot-size);
+  perspective: 900px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.cq-robot-tilt {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Aro de luz detrás del robot (más atrás en profundidad) */
+.cq-robot-halo {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(77, 150, 255, 0.35), rgba(77, 150, 255, 0) 68%);
+  transform: translateZ(-60px) scale(1.15);
+  animation: cq-halo 5s ease-in-out infinite;
+}
+
+.cq-robot-float {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  animation: cq-float 4.2s ease-in-out infinite;
+}
+
+.cq-robot-body {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(30px);
+  animation: cq-breathe 3s ease-in-out infinite;
+  filter: drop-shadow(0 22px 26px rgba(30, 60, 140, 0.22));
+}
+
+.cq-robot-body img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transform: scale(0.94) rotate(-2deg);
+  transition:
+    opacity 0.45s ease,
+    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cq-robot-body img.is-on {
+  opacity: 1;
+  transform: none;
+}
+
+/* Chispas de los propulsores */
+.cq-robot-jets {
+  position: absolute;
+  left: 38%;
+  bottom: 4%;
+  width: 24%;
+  height: 16%;
+  transform: translateZ(20px);
+}
+
+.cq-robot-jets i {
+  position: absolute;
+  bottom: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #e0f4ff, #6fc3ff 60%, transparent 70%);
+  opacity: 0;
+  animation: cq-jet 1.4s ease-out infinite;
+}
+
+.cq-robot-jets i:nth-child(1) {
+  left: 10%;
+}
+.cq-robot-jets i:nth-child(2) {
+  left: 45%;
+  animation-delay: 0.45s;
+}
+.cq-robot-jets i:nth-child(3) {
+  left: 75%;
+  animation-delay: 0.9s;
+}
+
+.cq-robot-say-wrap {
+  position: absolute;
+  bottom: 94%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  transform: translateZ(70px);
+}
+
+.cq-robot-say {
+  position: relative;
+  flex: none;
+  max-width: 15rem;
+  width: max-content;
+  padding: 0.7rem 1rem;
+  border-radius: 1.25rem;
+  text-align: center;
+  background: var(--color-surface);
+  border: 3px solid var(--color-primary-soft);
+  box-shadow:
+    0 12px 28px rgba(77, 150, 255, 0.2),
+    inset 0 -3px 0 rgba(77, 150, 255, 0.08);
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: var(--color-ink);
+  transform-origin: bottom center;
+  animation: cq-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.cq-robot-say::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  background: var(--color-surface);
+  border-right: 3px solid var(--color-primary-soft);
+  border-bottom: 3px solid var(--color-primary-soft);
+  transform: rotate(45deg);
+  border-radius: 0 0 4px 0;
+}
+
+.cq-robot-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -4%;
+  width: 46%;
+  height: 8%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(30, 50, 110, 0.28), transparent 70%);
+  transform: translateX(-50%);
+  animation: cq-shadow 4.2s ease-in-out infinite;
+}
+
+@keyframes cq-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-1.5deg);
+  }
+  50% {
+    transform: translate3d(0, -7%, 0) rotate(1.5deg);
+  }
+}
+
+@keyframes cq-breathe {
+  0%,
+  100% {
+    scale: 1 1;
+  }
+  50% {
+    scale: 1.015 0.985;
+  }
+}
+
+@keyframes cq-shadow {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(-50%) scale(0.78);
+    opacity: 0.65;
+  }
+}
+
+@keyframes cq-halo {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes cq-jet {
+  0% {
+    opacity: 0.9;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(26px) scale(0.3);
+  }
+}
+
+@keyframes cq-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+html.modo-calma .cq-robot *,
+html.modo-calma .cq-robot {
+  animation: none !important;
+}
+html.modo-calma .cq-robot-tilt {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cq-robot *,
+  .cq-robot {
+    animation: none !important;
+  }
+  .cq-robot-tilt {
+    transform: none;
+  }
+}
