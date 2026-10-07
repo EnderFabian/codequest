@@ -7,7 +7,7 @@ import {
 } from "remotion";
 import { Background } from "../components/Background";
 import { Robot } from "../components/Robot";
-import { Sfx } from "../components/Sfx";
+import { Sfx, Voice } from "../components/Sfx";
 import { colors, fontFamily } from "../theme";
 
 // Escena 5: cierre con el nombre y el mensaje del proyecto.
@@ -25,6 +25,7 @@ export const Outro: React.FC = () => {
   return (
     <Background>
       <Sfx name="chime" at={12} volume={0.4} />
+      <Voice line="outro" at={20} />
       <AbsoluteFill
         style={{
           fontFamily,

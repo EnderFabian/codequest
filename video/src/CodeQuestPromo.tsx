@@ -24,7 +24,7 @@ const transition = (
 );
 
 // El video completo: las cinco escenas, unidas con un fundido suave,
-// con música de fondo tranquila.
+// con música de fondo tranquila (baja, para que se entienda la voz).
 export const CodeQuestPromo: React.FC = () => {
   return (
     <>
@@ -34,7 +34,7 @@ export const CodeQuestPromo: React.FC = () => {
           interpolate(
             f,
             [0, 15, TOTAL_DURATION - 45, TOTAL_DURATION],
-            [0, 0.6, 0.6, 0],
+            [0, 0.4, 0.4, 0],
             {
               extrapolateLeft: "clamp",
               extrapolateRight: "clamp",

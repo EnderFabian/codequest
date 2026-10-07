@@ -8,7 +8,7 @@ import {
 } from "remotion";
 import { Background } from "../components/Background";
 import { Robot } from "../components/Robot";
-import { Sfx } from "../components/Sfx";
+import { Sfx, Voice } from "../components/Sfx";
 import { Star } from "../components/Star";
 import { colors, fontFamily } from "../theme";
 
@@ -165,6 +165,9 @@ export const Blocks: React.FC = () => {
         />
       ))}
       <Sfx name="chime" at={RUN_END} />
+      <Voice line="blocks" at={10} />
+      <Voice line="run" at={RUN_START - 15} />
+      <Voice line="goal" at={RUN_END + 8} />
       <AbsoluteFill style={{ fontFamily, padding: "70px 80px" }}>
         <div
           style={{

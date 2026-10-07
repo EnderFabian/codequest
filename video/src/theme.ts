@@ -31,11 +31,11 @@ export const FPS = 30;
 
 // Duración de cada escena (en frames) y de la transición entre escenas.
 export const SCENES = {
-  intro: 120,
-  blocks: 270,
+  intro: 160,
+  blocks: 300,
   roles: 180,
   celebrate: 120,
-  outro: 120,
+  outro: 150,
 };
 export const TRANSITION = 20;
 

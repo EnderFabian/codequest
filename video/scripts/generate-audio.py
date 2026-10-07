@@ -76,7 +76,7 @@ def save(name: str, samples: np.ndarray, peak: float = 0.8) -> None:
         path.unlink()
 
 
-def music(length: float = 26.0) -> np.ndarray:
+def music(length: float = 30.0) -> np.ndarray:
     """Música de fondo tranquila: C - G - Am - F con arpegios de campanita."""
     bpm = 96
     beat = 60 / bpm

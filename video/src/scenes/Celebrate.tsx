@@ -7,7 +7,7 @@ import {
 } from "remotion";
 import { Background } from "../components/Background";
 import { Robot } from "../components/Robot";
-import { Sfx } from "../components/Sfx";
+import { Sfx, Voice } from "../components/Sfx";
 import { Star } from "../components/Star";
 import { colors, fontFamily } from "../theme";
 
@@ -33,7 +33,8 @@ export const Celebrate: React.FC = () => {
 
   return (
     <Background>
-      <Sfx name="success" at={0} volume={0.55} />
+      <Sfx name="success" at={0} volume={0.35} />
+      <Voice line="celebrate" at={10} />
       {[0, 1, 2].map((i) => (
         <Sfx key={i} name="chime" at={36 + i * 12} volume={0.35} />
       ))}
