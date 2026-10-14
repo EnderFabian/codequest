@@ -35,7 +35,12 @@ type Props = {
 }
 
 const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2)
+const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
+const easeOutCubic = (t: number) => 1 - (1 - t) ** 3
+const easeInCubic = (t: number) => t * t * t
 const clamp01 = (t: number) => Math.min(1, Math.max(0, t))
+/** Medio casilla ≈ un paso de pie (alterna walk_a / walk_b). */
+const STRIDE = S * 0.5
 
 function starShape() {
   const shape = new THREE.Shape()
@@ -241,7 +246,7 @@ function Robot({
       toX: targetX,
       start: performance.now(),
       kind: anim.kind,
-      dur: Math.max(120, anim.durationMs * (calm ? 1.15 : 0.92)),
+      dur: Math.max(140, anim.durationMs * (calm ? 1.2 : 1)),
     }
     // Solo reacciona a un paso nuevo (anim.key); targetX llega junto con él.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -255,7 +260,6 @@ function Robot({
     if (born.current == null) born.current = now
     const tw = tween.current
     const t = clamp01((now - tw.start) / tw.dur)
-    const e = easeInOut(t)
     const time = state.clock.elapsedTime
     let x = tw.toX
     let y = 0
@@ -264,66 +268,123 @@ function Robot({
     let sy = 1
     let tilt = 0
     let nextPose: RobotPose = 'idle'
+    let plantFeet = false
 
     switch (tw.kind) {
-      case 'walk':
+      case 'walk': {
+        // Avance suave + 2 pasos de pie por casilla (alterna según posición mundial).
+        const e = easeInOutCubic(t)
         x = THREE.MathUtils.lerp(tw.fromX, tw.toX, e)
-        y = Math.sin(Math.PI * t) * 0.22 + Math.abs(Math.sin(Math.PI * 2 * t)) * 0.08
-        sy = 1 - Math.sin(Math.PI * 2 * t) * 0.06
-        sx = 1 + Math.sin(Math.PI * 2 * t) * 0.05
-        tilt = -0.1 * Math.sin(Math.PI * t)
-        // Ciclo feliz de caminata: alterna fotogramas.
-        nextPose = t < 1 ? (Math.floor(t * 6) % 2 === 0 ? 'walk_a' : 'walk_b') : 'happy'
+        const steps = Math.max(2, Math.round(Math.abs(tw.toX - tw.fromX) / STRIDE))
+        const stepPhase = t * steps
+        const inStep = stepPhase - Math.floor(stepPhase)
+        // Rebote corto al apoyar cada pie (no flotar).
+        y = Math.sin(inStep * Math.PI) * 0.1
+        sy = 1 - Math.sin(inStep * Math.PI) * 0.05
+        sx = 1 + Math.sin(inStep * Math.PI) * 0.035
+        tilt = -0.08 * Math.sin(stepPhase * Math.PI)
+        nextPose =
+          t < 1 ? (Math.floor(x / STRIDE + 0.001) % 2 === 0 ? 'walk_a' : 'walk_b') : 'happy'
         break
-      case 'jump':
-        x = THREE.MathUtils.lerp(tw.fromX, tw.toX, e)
-        y = Math.sin(Math.PI * t) * (0.55 + Math.abs(tw.toX - tw.fromX) * 0.12)
-        sy = t < 0.12 ? 1 - t * 0.8 : 1 + Math.sin(Math.PI * t) * 0.06
-        tilt = -0.25 * Math.sin(Math.PI * t)
-        nextPose = t < 1 ? 'fly' : 'happy'
+      }
+      case 'jump': {
+        const span = Math.abs(tw.toX - tw.fromX)
+        const peak = 0.72 + span * 0.18
+        // Anticipación → vuelo → aterrizaje (menos “robótico”).
+        if (t < 0.14) {
+          const a = t / 0.14
+          x = tw.fromX
+          y = -0.04 * easeOutCubic(a)
+          sy = 1 - 0.14 * a
+          sx = 1 + 0.1 * a
+          tilt = 0.06 * a
+          nextPose = 'happy'
+        } else if (t < 0.88) {
+          const flight = (t - 0.14) / 0.74
+          const arc = 1 - (2 * flight - 1) ** 2
+          x = THREE.MathUtils.lerp(tw.fromX, tw.toX, easeInOutCubic(flight))
+          y = arc * peak
+          const stretch = Math.sin(flight * Math.PI)
+          sy = 1 + stretch * 0.1
+          sx = 1 - stretch * 0.06
+          tilt = -0.22 * Math.sin(flight * Math.PI)
+          nextPose = 'fly'
+        } else {
+          const land = (t - 0.88) / 0.12
+          x = tw.toX
+          y = -0.05 * Math.sin(land * Math.PI)
+          sy = 1 - 0.12 * Math.sin(land * Math.PI)
+          sx = 1 + 0.08 * Math.sin(land * Math.PI)
+          tilt = 0.04 * (1 - land)
+          nextPose = land < 0.55 ? 'happy' : 'wave'
+        }
         break
+      }
       case 'fall': {
-        const walkPart = clamp01(t / 0.35)
-        const dropPart = clamp01((t - 0.35) / 0.65)
+        const walkPart = clamp01(t / 0.32)
+        const dropPart = clamp01((t - 0.32) / 0.68)
         x = THREE.MathUtils.lerp(tw.fromX, tw.toX, easeInOut(walkPart))
-        y = Math.sin(Math.PI * walkPart) * 0.22 - dropPart * dropPart * 3.8
+        y = Math.sin(Math.PI * walkPart) * 0.12 - easeInCubic(dropPart) * 3.9
         opacity = 1 - dropPart * 0.85
-        tilt = dropPart * 1.15
+        tilt = dropPart * 1.2
         sx = 1 + dropPart * 0.08
         sy = 1 - dropPart * 0.12
-        nextPose = dropPart < 0.08 ? 'walk_a' : 'fall'
+        nextPose = dropPart < 0.06 ? 'walk_a' : 'fall'
         break
       }
       case 'bump': {
         const push = Math.sin(Math.PI * Math.min(1, t * 1.6))
-        x = tw.toX + push * 0.32
-        sx = 1 - push * 0.12
-        tilt = push * 0.18 + (t > 0.6 && !calm ? Math.sin(t * 60) * 0.05 * (1 - t) : 0)
-        nextPose = t < 0.6 ? 'fly' : 'wave'
+        x = tw.toX + push * 0.28
+        sx = 1 - push * 0.1
+        tilt = push * 0.16 + (t > 0.6 && !calm ? Math.sin(t * 50) * 0.04 * (1 - t) : 0)
+        nextPose = t < 0.55 ? 'fly' : 'wave'
+        plantFeet = t >= 0.7
         break
       }
       case 'success': {
         x = tw.toX
         const hop = Math.abs(Math.sin(Math.PI * 2 * Math.min(t, 1)))
-        y = calm ? 0 : hop * 0.45
+        y = calm ? 0 : hop * 0.28
         nextPose = 'celebrate'
         break
       }
       default: {
-        const sinceBorn = now - born.current
-        nextPose = sinceBorn < 1800 ? 'wave' : status === 'fail_wall' ? 'wave' : 'idle'
+        // Parado en el piso: mueve brasitos (wave ↔ happy), sin flotar.
+        plantFeet = true
+        x = tw.toX
+        y = 0
+        const waveBeat = Math.floor(time * 1.55) % 2
+        nextPose = status === 'fail_wall' ? 'wave' : waveBeat === 0 ? 'wave' : 'happy'
+        // Ligero balanceo de brazos vía escala/tilt, pies plantados.
+        if (!calm) {
+          sx = 1 + Math.sin(time * 3.2) * 0.02
+          tilt = Math.sin(time * 2.6) * 0.04
+        }
       }
     }
 
-    // Respiración suave cuando está quieto.
-    const idleBob = !calm && (tw.kind === 'idle' || t >= 1) ? Math.sin(time * 2.2) * 0.05 : 0
-    if (tw.kind === 'success' && t >= 1 && !calm) y = Math.abs(Math.sin(time * 3)) * 0.18
+    // Tras terminar un paso, vuelve a idle plantado (salvo éxito).
+    if (t >= 1 && tw.kind !== 'success' && tw.kind !== 'fall') {
+      plantFeet = true
+      if (tw.kind === 'walk' || tw.kind === 'jump') {
+        const waveBeat = Math.floor(time * 1.55) % 2
+        nextPose = waveBeat === 0 ? 'wave' : 'happy'
+        y = 0
+        if (!calm) {
+          sx = 1 + Math.sin(time * 3.2) * 0.02
+          tilt = Math.sin(time * 2.6) * 0.04
+        }
+      }
+    }
+
+    if (tw.kind === 'success' && t >= 1 && !calm) y = Math.abs(Math.sin(time * 3)) * 0.12
 
     current.current.x = x
     current.current.y = y
     onX(x)
 
-    g.position.set(x, TILE_TOP + ROBOT_SIZE * 0.47 + y + idleBob, 0.05)
+    const groundY = TILE_TOP + ROBOT_SIZE * 0.47
+    g.position.set(x, groundY + (plantFeet ? 0 : y), 0.05)
     sp.scale.set(ROBOT_SIZE * sx, ROBOT_SIZE * sy, 1)
     material.current.rotation = tilt
     material.current.opacity = opacity
@@ -335,11 +396,11 @@ function Robot({
     }
 
     if (shadow.current) {
-      const h = Math.max(0, y)
+      const h = Math.max(0, plantFeet ? 0 : y)
       const visible = tw.kind === 'fall' ? 1 - clamp01((t - 0.4) / 0.2) : 1
       shadow.current.position.set(x, TILE_TOP + 0.01, 0.05)
-      shadow.current.scale.setScalar(Math.max(0.3, 1 - h * 0.35))
-      ;(shadow.current.material as THREE.MeshBasicMaterial).opacity = 0.22 * visible * (1 - h * 0.25)
+      shadow.current.scale.setScalar(Math.max(0.35, 1 - h * 0.32))
+      ;(shadow.current.material as THREE.MeshBasicMaterial).opacity = 0.28 * visible * (1 - h * 0.22)
     }
   })
 
@@ -378,9 +439,9 @@ function CameraRig({
   const target = useRef(new THREE.Vector3())
   useFrame((_, dt) => {
     const narrow = size.width < 640
-    const z = Math.max(0.55, Math.min(1.6, zoom))
-    // Un poco más cerca para que el tablero se sienta grande.
-    const visible = (narrow ? 3.2 : 5.2) / z
+    const z = Math.max(0.55, Math.min(1.7, zoom))
+    // Más cerca: el mapa llena el panel.
+    const visible = (narrow ? 2.7 : 4.2) / z
     let cx: number
     if (exploring) {
       const min = visible / 2 - 0.4
@@ -390,15 +451,15 @@ function CameraRig({
       cx = width / 2
     } else {
       cx = THREE.MathUtils.clamp(
-        (robotX.current ?? 0) + 1.2,
+        (robotX.current ?? 0) + 1.05,
         visible / 2 - 0.4,
         width - visible / 2 + 0.4,
       )
     }
-    const dist = (narrow ? 5.6 : 5.9) / z
+    const dist = (narrow ? 4.85 : 5.15) / z
     target.current.x = THREE.MathUtils.damp(target.current.x, cx, exploring ? 8 : 4, dt)
-    camera.position.set(target.current.x - 0.45, 3.35 / Math.sqrt(z), dist)
-    camera.lookAt(target.current.x, 0.55, 0)
+    camera.position.set(target.current.x - 0.35, 3.05 / Math.sqrt(z), dist)
+    camera.lookAt(target.current.x, 0.5, 0)
   })
   return null
 }

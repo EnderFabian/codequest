@@ -316,11 +316,13 @@ export function ChallengePage() {
   }
 
   return (
-    <main className="mx-auto max-w-7xl px-5 py-8">
-      <div className="mb-5 flex flex-wrap items-start justify-between gap-4 text-left">
+    <main className="cq-challenge relative mx-auto max-w-[1600px] px-3 py-6 sm:px-5 sm:py-8">
+      <div className="cq-challenge-side cq-challenge-side--left" aria-hidden />
+      <div className="cq-challenge-side cq-challenge-side--right" aria-hidden />
+      <div className="relative z-[1] mb-4 flex flex-wrap items-start justify-between gap-4 text-left">
         <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-5">
           <RobotAvatar
-            pose={won ? 'celebrate' : running ? 'fly' : 'wave'}
+            pose={won ? 'celebrate' : running ? 'fly' : ['wave', 'happy']}
             size={104}
             followPointer={false}
             className="hidden flex-none sm:block"
@@ -380,14 +382,20 @@ export function ChallengePage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(420px,1.05fr)]">
-        <Surface className="order-2 text-left xl:order-1">
+      <div className="relative z-[1] grid grid-cols-1 gap-4 xl:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.55fr)] xl:gap-5">
+        <Surface className="cq-blocks-panel order-2 text-left xl:order-1">
           <h2 className="mb-3 text-lg font-extrabold text-ink">Tus bloques</h2>
           <p className="mb-3 text-sm text-ink-muted">
             Arrastra bloques dentro de <strong>Iniciar</strong>. Arrastra en el fondo para seleccionar
             varios y usa <strong>Ctrl+C / Ctrl+V</strong> para copiar y pegar. Menos bloques = más
             puntos.
           </p>
+          <div className="cq-blocks-chips mb-3 flex flex-wrap gap-2" aria-hidden>
+            <span className="cq-chip cq-chip--green">Avanzar</span>
+            <span className="cq-chip cq-chip--purple">Saltar</span>
+            <span className="cq-chip cq-chip--orange">Repetir</span>
+            <span className="cq-chip cq-chip--blue">Pensar</span>
+          </div>
           <BlocklyWorkspace
             availableBlocks={level.bloquesDisponibles}
             onReady={(ws) => {
@@ -400,7 +408,7 @@ export function ChallengePage() {
           />
         </Surface>
 
-        <div className="order-1 flex flex-col gap-4 xl:order-2">
+        <div className="order-1 flex min-h-0 flex-col gap-3 xl:order-2">
           <GridWorld
             tiles={displayTiles}
             baseTiles={baseGrid.map((t) => (t === 'M' ? '.' : t)) as Tile[]}

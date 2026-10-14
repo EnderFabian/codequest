@@ -50,14 +50,14 @@ export const nivel5: LevelDef = {
     },
     {
       retoId: '5.4',
-      grid: ['M', '.', '★', '_', '★', '.', '#', '★', '_', '.', '★', '.', 'F'],
+      grid: ['M', '.', '★', '_', '★', '.', '#', '★', '_', '.', '★', '.', '_', '★', '.', 'F'],
       instruccion:
-        'El camino más largo hasta ahora, con 4 estrellas. ¿Tu programa del reto anterior sirve aquí también?',
+        'Camino largo con 5 estrellas, huecos y una pared. Un solo programa con O debe bastar.',
       solucionEjemplo: [
-        'repetir(12) { si ((¿hay hueco adelante?) O (¿hay pared adelante?)) { saltar(1) } sino { avanzar(1) } }',
+        'repetir(16) { si ((¿hay hueco adelante?) O (¿hay pared adelante?)) { saltar(1) } sino { avanzar(1) } }',
       ],
       maxTopBlocks: 1,
-      estrellasRequeridas: 4,
+      estrellasRequeridas: 5,
     },
   ],
 }

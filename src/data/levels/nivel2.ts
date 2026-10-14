@@ -9,38 +9,60 @@ export const nivel2: LevelDef = {
   retos: [
     {
       retoId: '2.1',
-      grid: ['M', '.', '.', '.', '.', '.', '.', 'F'],
+      grid: ['M', '.', '.', '.', '.', '.', '.', '.', '.', 'F'],
       instruccion:
-        'Este camino es largo, pero todas las casillas son iguales. En vez de muchos Avanzar, usa un solo bloque Repetir.',
-      solucionEjemplo: ['repetir(7) { avanzar(1) }'],
+        'Camino largo e igual. En vez de muchos Avanzar sueltos, usa un solo Repetir con Avanzar adentro.',
+      solucionEjemplo: ['repetir(9) { avanzar(1) }'],
       maxTopBlocks: 2,
     },
     {
       retoId: '2.2',
-      grid: ['M', '.', '_', '.', '.', '_', '.', '.', '_', '.', 'F'],
-      instruccion: 'Este camino repite el mismo patrón: avanzar y saltar. Repítelo con un solo bucle.',
-      solucionEjemplo: ['repetir(3) { avanzar(1); saltar(1) }', 'avanzar(1)'],
+      grid: ['M', '.', '_', '.', '.', '_', '.', '.', '_', '.', '.', 'F'],
+      instruccion:
+        'El patrón avanzar → saltar se repite. Mételo dentro de un Repetir y termina con Avanzar hasta la bandera.',
+      solucionEjemplo: ['repetir(3) { avanzar(1); saltar(1) }', 'avanzar(2)'],
+      maxTopBlocks: 3,
     },
     {
       retoId: '2.3',
-      grid: ['M', '★', '.', '★', '.', '★', '.', '★', 'F'],
-      instruccion: 'Recoge las estrellas usando un bucle.',
-      solucionEjemplo: ['repetir(4) { avanzar(2) }'],
+      grid: ['M', '★', '.', '★', '.', '★', '.', '★', '.', '★', 'F'],
+      instruccion: 'Recoge las 5 estrellas usando un bucle. Máximo 1 bloque dentro de Iniciar.',
+      solucionEjemplo: ['repetir(10) { avanzar(1) }'],
+      maxTopBlocks: 1,
+      estrellasRequeridas: 5,
     },
     {
       retoId: '2.4',
-      grid: ['M', '.', '.', '.', '.', '_', '.', '.', '_', '.', 'F'],
-      instruccion: 'Puedes usar varios bloques Repetir, uno después de otro.',
+      grid: ['M', '.', '.', '.', '.', '_', '.', '.', '_', '.', '.', '_', '.', 'F'],
+      instruccion:
+        'Primero un tramo de avance con Repetir, luego otro Repetir que salte y avance. Usa dos bucles.',
       solucionEjemplo: [
         'repetir(4) { avanzar(1) }',
-        'repetir(2) { saltar(1); avanzar(1) }',
+        'repetir(3) { saltar(1); avanzar(1) }',
+        'avanzar(1)',
       ],
+      maxTopBlocks: 4,
     },
     {
       retoId: '2.5',
-      grid: ['M', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'F'],
-      instruccion: 'Encuentra tú mismo el patrón que se repite y arma el bucle más corto posible.',
-      solucionEjemplo: ['repetir(12) { avanzar(1) }'],
+      grid: ['M', '.', '_', '★', '.', '_', '★', '.', '_', '★', '.', 'F'],
+      instruccion:
+        'Patrón: saltar y avanzar (por la estrella). Repítelo 3 veces y da un Avanzar final a la bandera.',
+      solucionEjemplo: [
+        'avanzar(1)',
+        'repetir(3) { saltar(1); avanzar(1) }',
+        'avanzar(1)',
+      ],
+      maxTopBlocks: 4,
+      estrellasRequeridas: 3,
+    },
+    {
+      retoId: '2.6',
+      grid: ['M', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'F'],
+      instruccion:
+        'Camino muy largo: encuentra el bucle más corto posible. Solo 1 bloque dentro de Iniciar.',
+      solucionEjemplo: ['repetir(14) { avanzar(1) }'],
+      maxTopBlocks: 1,
     },
   ],
 }

@@ -122,7 +122,7 @@ export function GridWorld({
 
   const [exploring, setExploring] = useState(false)
   const [panX, setPanX] = useState(width / 2)
-  const [zoom, setZoom] = useState(1.12)
+  const [zoom, setZoom] = useState(1.22)
   const drag = useRef<{ x: number; pan: number } | null>(null)
 
   useEffect(() => {
@@ -210,7 +210,7 @@ export function GridWorld({
             className="inline-flex min-h-9 w-9 items-center justify-center rounded-xl border-2 border-border bg-surface text-ink shadow-[0_3px_0_#dbe3f0] disabled:opacity-40"
             onClick={() => {
               setPanX(safePos * S)
-              setZoom(1.12)
+              setZoom(1.22)
             }}
             disabled={locked}
             aria-label="Centrar en el robot"
@@ -223,7 +223,7 @@ export function GridWorld({
 
       <div
         className={[
-          'relative h-[400px] w-full sm:h-[480px] lg:h-[540px]',
+          'relative h-[min(58vh,520px)] w-full min-h-[440px] sm:h-[min(62vh,600px)] lg:h-[min(68vh,680px)]',
           exploring && !locked ? 'cursor-grab active:cursor-grabbing' : '',
         ].join(' ')}
         role="img"

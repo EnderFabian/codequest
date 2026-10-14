@@ -62,11 +62,11 @@
     margin: 0;
     min-height: 100svh;
     background:
-      radial-gradient(ellipse 70% 48% at 8% -8%, rgba(77, 150, 255, 0.28), transparent 60%),
-      radial-gradient(ellipse 55% 42% at 92% 4%, rgba(107, 203, 119, 0.22), transparent 58%),
-      radial-gradient(ellipse 45% 36% at 70% 100%, rgba(155, 114, 232, 0.14), transparent 55%),
-      radial-gradient(ellipse 40% 30% at 20% 85%, rgba(255, 201, 61, 0.12), transparent 50%),
-      linear-gradient(180deg, #f4f7ff 0%, var(--page-bg) 42%, #eef6f2 100%);
+      radial-gradient(ellipse 70% 48% at 6% -6%, rgba(77, 150, 255, 0.32), transparent 58%),
+      radial-gradient(ellipse 55% 42% at 94% 6%, rgba(107, 203, 119, 0.26), transparent 55%),
+      radial-gradient(ellipse 40% 34% at 50% 100%, rgba(255, 201, 61, 0.16), transparent 52%),
+      radial-gradient(ellipse 36% 28% at 18% 78%, rgba(47, 184, 176, 0.12), transparent 48%),
+      linear-gradient(180deg, #eaf2ff 0%, var(--page-bg) 40%, #e8f6ef 100%);
   }
 
   /* Contornos / profundidad suave del lienzo de página */
@@ -358,6 +358,67 @@ html.modo-calma .world-card:focus-within .world-card-inner {
 }
 .cq-blockly .cq-marquee {
   pointer-events: none;
+}
+
+/* Laterales del reto: profundidad y acentos (no el tablero 3D) */
+.cq-challenge-side {
+  pointer-events: none;
+  position: absolute;
+  top: 6%;
+  bottom: 8%;
+  width: min(140px, 12vw);
+  z-index: 0;
+  border-radius: 2rem;
+  opacity: 0.9;
+}
+.cq-challenge-side--left {
+  left: 0;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(77, 150, 255, 0.35), transparent 55%),
+    radial-gradient(circle at 70% 70%, rgba(107, 203, 119, 0.28), transparent 50%),
+    linear-gradient(180deg, rgba(77, 150, 255, 0.12), rgba(255, 217, 61, 0.1));
+  box-shadow: inset -8px 0 24px rgba(77, 150, 255, 0.08);
+}
+.cq-challenge-side--right {
+  right: 0;
+  background:
+    radial-gradient(circle at 60% 30%, rgba(255, 159, 90, 0.3), transparent 55%),
+    radial-gradient(circle at 40% 80%, rgba(47, 184, 176, 0.26), transparent 50%),
+    linear-gradient(180deg, rgba(107, 203, 119, 0.12), rgba(77, 150, 255, 0.1));
+  box-shadow: inset 8px 0 24px rgba(47, 184, 176, 0.08);
+}
+@media (max-width: 1100px) {
+  .cq-challenge-side {
+    display: none;
+  }
+}
+
+.cq-blocks-panel {
+  background:
+    linear-gradient(165deg, rgba(232, 241, 255, 0.95) 0%, rgba(255, 255, 255, 0.92) 42%, rgba(232, 248, 234, 0.9) 100%) !important;
+}
+
+.cq-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.12);
+}
+.cq-chip--green {
+  background: #22a06b;
+}
+.cq-chip--purple {
+  background: #8b5cf6;
+}
+.cq-chip--orange {
+  background: #f07c2a;
+}
+.cq-chip--blue {
+  background: #4d96ff;
 }
 
 /* Globo de diálogo del robot en los retos */
