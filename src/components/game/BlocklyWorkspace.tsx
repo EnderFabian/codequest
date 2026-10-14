@@ -85,7 +85,7 @@ export function BlocklyWorkspace({ availableBlocks, onReady, onDispose }: Props)
   return (
     <div
       ref={hostRef}
-      className="cq-blockly h-[min(70vh,620px)] min-h-[480px] w-full overflow-hidden rounded-3xl border-[3px] border-[#e6edf8] bg-surface shadow-[inset_0_2px_8px_rgba(46,70,140,0.06)]"
+      className="cq-blockly h-[min(78vh,760px)] min-h-[560px] w-full overflow-hidden rounded-3xl border-[3px] border-[#e6edf8] bg-surface shadow-[inset_0_2px_8px_rgba(46,70,140,0.06)]"
       aria-label="Área de bloques de programación"
     />
   )

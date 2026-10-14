@@ -316,8 +316,7 @@ export function ChallengePage() {
   }
 
   return (
-    <main className="cq-challenge relative mx-auto max-w-[1600px] px-3 py-6 sm:px-5 sm:py-8">
-      <div className="cq-challenge-side cq-challenge-side--left" aria-hidden />
+    <main className="cq-challenge relative mx-auto max-w-[1760px] px-2 py-5 sm:px-3 sm:py-7 lg:px-4">
       <div className="cq-challenge-side cq-challenge-side--right" aria-hidden />
       <div className="relative z-[1] mb-4 flex flex-wrap items-start justify-between gap-4 text-left">
         <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-5">
@@ -382,15 +381,15 @@ export function ChallengePage() {
         </Link>
       </div>
 
-      <div className="relative z-[1] grid grid-cols-1 gap-4 xl:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.55fr)] xl:gap-5">
-        <Surface className="cq-blocks-panel order-2 text-left xl:order-1">
-          <h2 className="mb-3 text-lg font-extrabold text-ink">Tus bloques</h2>
-          <p className="mb-3 text-sm text-ink-muted">
+      <div className="relative z-[1] grid grid-cols-1 gap-3 xl:grid-cols-[minmax(480px,1.35fr)_minmax(0,1fr)] xl:gap-4">
+        <Surface className="cq-blocks-panel order-2 p-4 text-left sm:p-5 xl:order-1 xl:-ml-1">
+          <h2 className="mb-2 text-lg font-extrabold text-ink">Tus bloques</h2>
+          <p className="mb-2 text-sm text-ink-muted">
             Arrastra bloques dentro de <strong>Iniciar</strong>. Arrastra en el fondo para seleccionar
             varios y usa <strong>Ctrl+C / Ctrl+V</strong> para copiar y pegar. Menos bloques = más
             puntos.
           </p>
-          <div className="cq-blocks-chips mb-3 flex flex-wrap gap-2" aria-hidden>
+          <div className="cq-blocks-chips mb-2 flex flex-wrap gap-2" aria-hidden>
             <span className="cq-chip cq-chip--green">Avanzar</span>
             <span className="cq-chip cq-chip--purple">Saltar</span>
             <span className="cq-chip cq-chip--orange">Repetir</span>

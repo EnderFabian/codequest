@@ -272,51 +272,65 @@ function Robot({
 
     switch (tw.kind) {
       case 'walk': {
-        // Avance suave + 2 pasos de pie por casilla (alterna según posición mundial).
+        // Caminata pie a pie: walk_l ↔ walk_r según distancia recorrida.
         const e = easeInOutCubic(t)
         x = THREE.MathUtils.lerp(tw.fromX, tw.toX, e)
         const steps = Math.max(2, Math.round(Math.abs(tw.toX - tw.fromX) / STRIDE))
         const stepPhase = t * steps
         const inStep = stepPhase - Math.floor(stepPhase)
-        // Rebote corto al apoyar cada pie (no flotar).
-        y = Math.sin(inStep * Math.PI) * 0.1
-        sy = 1 - Math.sin(inStep * Math.PI) * 0.05
-        sx = 1 + Math.sin(inStep * Math.PI) * 0.035
-        tilt = -0.08 * Math.sin(stepPhase * Math.PI)
-        nextPose =
-          t < 1 ? (Math.floor(x / STRIDE + 0.001) % 2 === 0 ? 'walk_a' : 'walk_b') : 'happy'
+        y = Math.sin(inStep * Math.PI) * 0.11
+        sy = 1 - Math.sin(inStep * Math.PI) * 0.055
+        sx = 1 + Math.sin(inStep * Math.PI) * 0.04
+        tilt = -0.09 * Math.sin(stepPhase * Math.PI)
+        // Alterna pie izquierdo / derecho de forma continua entre casillas.
+        const foot = Math.floor(x / STRIDE + 0.001) % 2
+        nextPose = t < 1 ? (foot === 0 ? 'walk_l' : 'walk_r') : 'happy'
         break
       }
       case 'jump': {
         const span = Math.abs(tw.toX - tw.fromX)
-        const peak = 0.72 + span * 0.18
-        // Anticipación → vuelo → aterrizaje (menos “robótico”).
-        if (t < 0.14) {
-          const a = t / 0.14
+        const peak = 0.78 + span * 0.2
+        // Anticipación → subida → ápice → bajada → aterrizaje (frames nuevos).
+        if (t < 0.12) {
+          const a = t / 0.12
           x = tw.fromX
-          y = -0.04 * easeOutCubic(a)
-          sy = 1 - 0.14 * a
-          sx = 1 + 0.1 * a
-          tilt = 0.06 * a
+          y = -0.05 * easeOutCubic(a)
+          sy = 1 - 0.16 * a
+          sx = 1 + 0.12 * a
+          tilt = 0.05 * a
           nextPose = 'happy'
+        } else if (t < 0.42) {
+          const up = (t - 0.12) / 0.3
+          x = THREE.MathUtils.lerp(tw.fromX, tw.toX, easeOutCubic(up) * 0.45)
+          y = easeOutCubic(up) * peak
+          sy = 1 + up * 0.12
+          sx = 1 - up * 0.07
+          tilt = -0.18 * up
+          nextPose = 'jump_up'
+        } else if (t < 0.58) {
+          const mid = (t - 0.42) / 0.16
+          x = THREE.MathUtils.lerp(tw.fromX, tw.toX, 0.45 + mid * 0.2)
+          y = peak * (1 - mid * 0.08)
+          sy = 1.1
+          sx = 0.92
+          tilt = -0.12
+          nextPose = 'jump_apex'
         } else if (t < 0.88) {
-          const flight = (t - 0.14) / 0.74
-          const arc = 1 - (2 * flight - 1) ** 2
-          x = THREE.MathUtils.lerp(tw.fromX, tw.toX, easeInOutCubic(flight))
-          y = arc * peak
-          const stretch = Math.sin(flight * Math.PI)
-          sy = 1 + stretch * 0.1
-          sx = 1 - stretch * 0.06
-          tilt = -0.22 * Math.sin(flight * Math.PI)
-          nextPose = 'fly'
+          const down = (t - 0.58) / 0.3
+          x = THREE.MathUtils.lerp(tw.fromX, tw.toX, 0.65 + easeInCubic(down) * 0.35)
+          y = peak * 0.92 * (1 - easeInCubic(down))
+          sy = 1 + (1 - down) * 0.08
+          sx = 1 - (1 - down) * 0.05
+          tilt = -0.1 * (1 - down)
+          nextPose = 'jump_down'
         } else {
           const land = (t - 0.88) / 0.12
           x = tw.toX
-          y = -0.05 * Math.sin(land * Math.PI)
-          sy = 1 - 0.12 * Math.sin(land * Math.PI)
-          sx = 1 + 0.08 * Math.sin(land * Math.PI)
-          tilt = 0.04 * (1 - land)
-          nextPose = land < 0.55 ? 'happy' : 'wave'
+          y = -0.06 * Math.sin(land * Math.PI)
+          sy = 1 - 0.14 * Math.sin(land * Math.PI)
+          sx = 1 + 0.1 * Math.sin(land * Math.PI)
+          tilt = 0.03 * (1 - land)
+          nextPose = land < 0.5 ? 'jump_down' : 'happy'
         }
         break
       }
@@ -329,7 +343,7 @@ function Robot({
         tilt = dropPart * 1.2
         sx = 1 + dropPart * 0.08
         sy = 1 - dropPart * 0.12
-        nextPose = dropPart < 0.06 ? 'walk_a' : 'fall'
+        nextPose = dropPart < 0.06 ? 'walk_l' : 'fall'
         break
       }
       case 'bump': {
