@@ -23,8 +23,11 @@
   --shadow-lift: 0 12px 32px rgba(77, 150, 255, 0.18);
   /* Sombra "clay": volumen suave por fuera y brillo por dentro */
   --shadow-clay:
-    0 14px 34px rgba(46, 70, 140, 0.12), 0 3px 0 rgba(46, 70, 140, 0.05),
-    inset 0 -4px 0 rgba(77, 150, 255, 0.06), inset 0 2px 0 rgba(255, 255, 255, 0.9);
+    0 18px 42px rgba(46, 70, 140, 0.14),
+    0 6px 14px rgba(46, 70, 140, 0.08),
+    0 3px 0 rgba(46, 70, 140, 0.06),
+    inset 0 -5px 0 rgba(77, 150, 255, 0.07),
+    inset 0 2px 0 rgba(255, 255, 255, 0.95);
 
   --ease-calm: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-calm: 280ms;
@@ -59,13 +62,53 @@
     margin: 0;
     min-height: 100svh;
     background:
-      radial-gradient(ellipse 80% 50% at 10% -10%, rgba(77, 150, 255, 0.16), transparent),
-      radial-gradient(ellipse 60% 40% at 90% 0%, rgba(107, 203, 119, 0.12), transparent),
-      var(--page-bg);
+      radial-gradient(ellipse 70% 48% at 8% -8%, rgba(77, 150, 255, 0.28), transparent 60%),
+      radial-gradient(ellipse 55% 42% at 92% 4%, rgba(107, 203, 119, 0.22), transparent 58%),
+      radial-gradient(ellipse 45% 36% at 70% 100%, rgba(155, 114, 232, 0.14), transparent 55%),
+      radial-gradient(ellipse 40% 30% at 20% 85%, rgba(255, 201, 61, 0.12), transparent 50%),
+      linear-gradient(180deg, #f4f7ff 0%, var(--page-bg) 42%, #eef6f2 100%);
+  }
+
+  /* Contornos / profundidad suave del lienzo de página */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.45;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(77, 150, 255, 0.14) 1px, transparent 0);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse 75% 70% at 50% 35%, #000 15%, transparent 75%);
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 90% 70% at 50% 40%, transparent 45%, rgba(46, 70, 140, 0.07) 100%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, transparent 18%, transparent 78%, rgba(77, 150, 255, 0.06) 100%);
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
   }
 
   html.modo-calma body {
     background: var(--page-bg);
+  }
+
+  html.modo-calma body::before {
+    opacity: 0.18;
+  }
+
+  html.modo-calma body::after {
+    opacity: 0.35;
   }
 
   *,

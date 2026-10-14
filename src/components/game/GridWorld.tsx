@@ -1,6 +1,7 @@
 import { Component, lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Move, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react'
 import { ROBOT_FRAMES } from '../../assets/robot'
+import { boardThemeForLevel, type BoardTheme } from '../../game/boardThemes'
 import type { StepResult, Tile } from '../../game/types'
 import type { BoardAnim } from './Board3D'
 
@@ -19,6 +20,7 @@ type Props = {
   message?: string
   /** Desactiva explorar mientras corre el programa. */
   locked?: boolean
+  theme?: BoardTheme
 }
 
 function hasWebGL() {
@@ -111,6 +113,7 @@ export function GridWorld({
   calm = false,
   message,
   locked = false,
+  theme = boardThemeForLevel('secuencias', 0),
 }: Props) {
   const safePos = Math.max(0, Math.min(position, Math.max(tiles.length - 1, 0)))
   const webgl = useMemo(() => hasWebGL(), [])
@@ -119,7 +122,7 @@ export function GridWorld({
 
   const [exploring, setExploring] = useState(false)
   const [panX, setPanX] = useState(width / 2)
-  const [zoom, setZoom] = useState(1)
+  const [zoom, setZoom] = useState(1.12)
   const drag = useRef<{ x: number; pan: number } | null>(null)
 
   useEffect(() => {
@@ -152,9 +155,14 @@ export function GridWorld({
   }
 
   return (
-    <div className="overflow-hidden rounded-3xl bg-gradient-to-b from-[#cfe3ff] via-[#e4f0ff] to-[#eaf8ec] shadow-[var(--shadow-soft)]">
+    <div
+      className="cq-board overflow-hidden rounded-[1.75rem] border-[3px] border-white/70 shadow-[var(--shadow-clay)]"
+      style={{
+        background: `linear-gradient(165deg, ${theme.cssFrom} 0%, ${theme.cssVia} 48%, ${theme.cssTo} 100%)`,
+      }}
+    >
       <div className="flex flex-wrap items-center justify-between gap-2 px-3 pt-3">
-        <p className="text-xs font-bold text-ink-muted">
+        <p className="text-xs font-extrabold text-ink/80">
           {exploring
             ? 'Arrastra el mapa para ver todo el nivel'
             : 'Explora el mapa para planear tu solución'}
@@ -202,7 +210,7 @@ export function GridWorld({
             className="inline-flex min-h-9 w-9 items-center justify-center rounded-xl border-2 border-border bg-surface text-ink shadow-[0_3px_0_#dbe3f0] disabled:opacity-40"
             onClick={() => {
               setPanX(safePos * S)
-              setZoom(1)
+              setZoom(1.12)
             }}
             disabled={locked}
             aria-label="Centrar en el robot"
@@ -215,7 +223,7 @@ export function GridWorld({
 
       <div
         className={[
-          'relative h-[300px] w-full sm:h-[340px]',
+          'relative h-[400px] w-full sm:h-[480px] lg:h-[540px]',
           exploring && !locked ? 'cursor-grab active:cursor-grabbing' : '',
         ].join(' ')}
         role="img"
@@ -244,6 +252,7 @@ export function GridWorld({
                 panX={panX}
                 zoom={zoom}
                 exploring={exploring && !locked}
+                theme={theme}
               />
             </Suspense>
           </Fallback3D>

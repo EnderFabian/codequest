@@ -3,7 +3,7 @@ import { Heart, Sparkles } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { countTopBlocks, serializeWorkspace } from '../../blockly/serialize'
-import { getChallenge, getNextChallenge } from '../../data/levels'
+import { getChallenge, getNextChallenge, LEVELS } from '../../data/levels'
 import { useAuth } from '../../context/AuthContext'
 import { useCalmMode } from '../../context/CalmModeContext'
 import {
@@ -20,6 +20,7 @@ import {
   recordChallengeScore,
   saveAttempt,
 } from '../../game/progressStore'
+import { boardThemeForLevel } from '../../game/boardThemes'
 import { countProgramBlocks, estimateOptimalBlocks, scoreFromBlocks } from '../../game/scoring'
 import type { StepResult, Tile } from '../../game/types'
 import { RobotAvatar } from '../robot/RobotAvatar'
@@ -289,6 +290,8 @@ export function ChallengePage() {
     step?.tiles ?? (baseGrid.map((t) => (t === 'M' ? '.' : t)) as Tile[])
   const position = step?.position ?? 0
   const next = getNextChallenge(level.levelId, challenge.retoId)
+  const levelIndex = Math.max(0, LEVELS.findIndex((l) => l.levelId === level.levelId))
+  const boardTheme = boardThemeForLevel(level.levelId, levelIndex)
 
   function handleResetMap() {
     runIdRef.current += 1
@@ -377,8 +380,8 @@ export function ChallengePage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,1.5fr)_minmax(280px,1fr)]">
-        <Surface className="order-1 text-left">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(420px,1.05fr)]">
+        <Surface className="order-2 text-left xl:order-1">
           <h2 className="mb-3 text-lg font-extrabold text-ink">Tus bloques</h2>
           <p className="mb-3 text-sm text-ink-muted">
             Arrastra bloques dentro de <strong>Iniciar</strong>. Arrastra en el fondo para seleccionar
@@ -397,7 +400,7 @@ export function ChallengePage() {
           />
         </Surface>
 
-        <div className="order-2 flex flex-col gap-4">
+        <div className="order-1 flex flex-col gap-4 xl:order-2">
           <GridWorld
             tiles={displayTiles}
             baseTiles={baseGrid.map((t) => (t === 'M' ? '.' : t)) as Tile[]}
@@ -407,6 +410,7 @@ export function ChallengePage() {
             calm={calmMode}
             message={feedback || step?.message}
             locked={running}
+            theme={boardTheme}
           />
           <div className="flex flex-wrap gap-3">
             <Button

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { ROBOT_FRAMES, ROBOT_POSES, type RobotPose } from '../../assets/robot'
+import { ROBOT_FRAMES, ROBOT_UI_POSES, type RobotPose } from '../../assets/robot'
 import './RobotAvatar.css'
 
 type Props = {
@@ -71,7 +71,7 @@ export function RobotAvatar({
         <div className="cq-robot-halo" />
         <div className="cq-robot-float">
           <div className="cq-robot-body">
-            {ROBOT_POSES.map((p) => (
+            {ROBOT_UI_POSES.map((p) => (
               <img
                 key={p}
                 src={ROBOT_FRAMES[p]}

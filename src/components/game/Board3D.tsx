@@ -3,12 +3,13 @@ import { RoundedBox, Sparkles, useTexture } from '@react-three/drei'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { ROBOT_FRAMES, ROBOT_POSES, type RobotPose } from '../../assets/robot'
+import { boardThemeForLevel, type BoardTheme } from '../../game/boardThemes'
 import type { StepResult, Tile } from '../../game/types'
 
 /** Distancia entre casillas en el mundo 3D. */
-const S = 1.2
-const TILE_TOP = 0.2
-const ROBOT_SIZE = 1.2
+const S = 1.35
+const TILE_TOP = 0.22
+const ROBOT_SIZE = 1.45
 
 export type BoardAnim = {
   /** Cambia en cada paso para disparar una animación nueva. */
@@ -30,6 +31,7 @@ type Props = {
   zoom?: number
   /** Si true, la cámara no sigue al robot (modo explorar). */
   exploring?: boolean
+  theme?: BoardTheme
 }
 
 const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2)
@@ -107,23 +109,39 @@ function Flag({ x, calm }: { x: number; calm: boolean }) {
   )
 }
 
-function TileBlock({ tile, x, index }: { tile: Tile; x: number; index: number }) {
+function TileBlock({
+  tile,
+  x,
+  index,
+  theme,
+}: {
+  tile: Tile
+  x: number
+  index: number
+  theme: BoardTheme
+}) {
   if (tile === '_') {
     // Hueco: sin piso, solo un brillo de agua muy abajo.
     return (
       <mesh position={[x, -1.6, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[0.5, 32]} />
-        <meshStandardMaterial color="#4d96ff" transparent opacity={0.35} />
+        <circleGeometry args={[0.55, 32]} />
+        <meshStandardMaterial color={theme.water} transparent opacity={0.55} />
       </mesh>
     )
   }
   const top =
-    tile === 'F' ? '#6bcb77' : tile === '★' ? '#fff3b0' : index % 2 === 0 ? '#9fdc8f' : '#b8e8a8'
+    tile === 'F'
+      ? theme.accent
+      : tile === '★'
+        ? '#ffe066'
+        : index % 2 === 0
+          ? theme.grassA
+          : theme.grassB
   return (
     <group position={[x, 0, 0]}>
       {/* Isla flotante: tierra abajo, pasto arriba */}
-      <RoundedBox args={[1.08, 0.9, 1.08]} radius={0.12} position={[0, -0.45, 0]} receiveShadow>
-        <meshStandardMaterial color="#d9a877" roughness={0.9} />
+      <RoundedBox args={[1.18, 0.95, 1.18]} radius={0.14} position={[0, -0.48, 0]} receiveShadow>
+        <meshStandardMaterial color={theme.dirt} roughness={0.88} />
       </RoundedBox>
       <RoundedBox args={[1.12, 0.22, 1.12]} radius={0.08} position={[0, TILE_TOP - 0.1, 0]} receiveShadow castShadow>
         <meshStandardMaterial color={top} roughness={0.7} />
@@ -250,11 +268,12 @@ function Robot({
     switch (tw.kind) {
       case 'walk':
         x = THREE.MathUtils.lerp(tw.fromX, tw.toX, e)
-        y = Math.sin(Math.PI * t) * 0.28
-        sy = 1 - Math.sin(Math.PI * 2 * t) * 0.05
-        sx = 1 + Math.sin(Math.PI * 2 * t) * 0.04
-        tilt = -0.08 * Math.sin(Math.PI * t)
-        nextPose = t < 1 ? 'fly' : 'idle'
+        y = Math.sin(Math.PI * t) * 0.22 + Math.abs(Math.sin(Math.PI * 2 * t)) * 0.08
+        sy = 1 - Math.sin(Math.PI * 2 * t) * 0.06
+        sx = 1 + Math.sin(Math.PI * 2 * t) * 0.05
+        tilt = -0.1 * Math.sin(Math.PI * t)
+        // Ciclo feliz de caminata: alterna fotogramas.
+        nextPose = t < 1 ? (Math.floor(t * 6) % 2 === 0 ? 'walk_a' : 'walk_b') : 'happy'
         break
       case 'jump':
         x = THREE.MathUtils.lerp(tw.fromX, tw.toX, e)
@@ -264,13 +283,15 @@ function Robot({
         nextPose = t < 1 ? 'fly' : 'happy'
         break
       case 'fall': {
-        const walkPart = clamp01(t / 0.4)
-        const dropPart = clamp01((t - 0.4) / 0.6)
+        const walkPart = clamp01(t / 0.35)
+        const dropPart = clamp01((t - 0.35) / 0.65)
         x = THREE.MathUtils.lerp(tw.fromX, tw.toX, easeInOut(walkPart))
-        y = Math.sin(Math.PI * walkPart) * 0.25 - dropPart * dropPart * 3.5
-        opacity = 1 - dropPart * 0.9
-        tilt = dropPart * 0.9
-        nextPose = 'fly'
+        y = Math.sin(Math.PI * walkPart) * 0.22 - dropPart * dropPart * 3.8
+        opacity = 1 - dropPart * 0.85
+        tilt = dropPart * 1.15
+        sx = 1 + dropPart * 0.08
+        sy = 1 - dropPart * 0.12
+        nextPose = dropPart < 0.08 ? 'walk_a' : 'fall'
         break
       }
       case 'bump': {
@@ -358,7 +379,8 @@ function CameraRig({
   useFrame((_, dt) => {
     const narrow = size.width < 640
     const z = Math.max(0.55, Math.min(1.6, zoom))
-    const visible = (narrow ? 3.6 : 6) / z
+    // Un poco más cerca para que el tablero se sienta grande.
+    const visible = (narrow ? 3.2 : 5.2) / z
     let cx: number
     if (exploring) {
       const min = visible / 2 - 0.4
@@ -373,12 +395,38 @@ function CameraRig({
         width - visible / 2 + 0.4,
       )
     }
-    const dist = (narrow ? 6.4 : 6.6) / z
+    const dist = (narrow ? 5.6 : 5.9) / z
     target.current.x = THREE.MathUtils.damp(target.current.x, cx, exploring ? 8 : 4, dt)
-    camera.position.set(target.current.x - 0.5, 3.6 / Math.sqrt(z), dist)
-    camera.lookAt(target.current.x, 0.5, 0)
+    camera.position.set(target.current.x - 0.45, 3.35 / Math.sqrt(z), dist)
+    camera.lookAt(target.current.x, 0.55, 0)
   })
   return null
+}
+
+function ThemeSky({ theme, width }: { theme: BoardTheme; width: number }) {
+  const mid = width / 2
+  return (
+    <group>
+      {/* Cielo en capas para más profundidad y contraste */}
+      <mesh position={[mid, 3.2, -8]} scale={[Math.max(18, width + 14), 10, 1]}>
+        <planeGeometry />
+        <meshBasicMaterial color={theme.skyTop} />
+      </mesh>
+      <mesh position={[mid, 0.2, -7.2]} scale={[Math.max(18, width + 14), 5.5, 1]}>
+        <planeGeometry />
+        <meshBasicMaterial color={theme.skyMid} />
+      </mesh>
+      <mesh position={[mid, -2.6, -6.4]} scale={[Math.max(18, width + 14), 4, 1]}>
+        <planeGeometry />
+        <meshBasicMaterial color={theme.skyBottom} />
+      </mesh>
+      {/* Suelo lejano con más contraste */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[mid, -2.35, 0]} receiveShadow>
+        <circleGeometry args={[Math.max(10, width * 0.9), 64]} />
+        <meshStandardMaterial color={theme.hemiGround} roughness={1} transparent opacity={0.55} />
+      </mesh>
+    </group>
+  )
 }
 
 export function Board3D({
@@ -391,6 +439,7 @@ export function Board3D({
   panX = 0,
   zoom = 1,
   exploring = false,
+  theme = boardThemeForLevel('secuencias', 0),
 }: Props) {
   const width = (tiles.length - 1) * S
   const robotX = useRef(position * S)
@@ -401,14 +450,16 @@ export function Board3D({
     <Canvas
       shadows
       dpr={[1, 2]}
-      camera={{ fov: 38, position: [width / 2, 4, 8], near: 0.1, far: 100 }}
+      camera={{ fov: 36, position: [width / 2, 3.8, 7.2], near: 0.1, far: 100 }}
       gl={{ alpha: true, antialias: true }}
       style={{ width: '100%', height: '100%', touchAction: exploring ? 'none' : 'auto' }}
     >
-      <hemisphereLight args={['#ffffff', '#b9d4ff', 1.1]} />
+      <color attach="background" args={[theme.skyTop]} />
+      <fog attach="fog" args={[theme.skyMid, 12, 26]} />
+      <hemisphereLight args={[theme.hemiSky, theme.hemiGround, 1.35]} />
       <directionalLight
         position={[4, 8, 5]}
-        intensity={1.5}
+        intensity={1.8}
         castShadow
         shadow-mapSize={[1024, 1024]}
         shadow-camera-left={-12}
@@ -416,9 +467,10 @@ export function Board3D({
         shadow-camera-top={6}
         shadow-camera-bottom={-6}
       />
+      <ThemeSky theme={theme} width={width} />
       <group>
         {baseTiles.map((t, i) => (
-          <TileBlock key={i} tile={t === 'M' ? '.' : t} x={i * S} index={i} />
+          <TileBlock key={i} tile={t === 'M' ? '.' : t} x={i * S} index={i} theme={theme} />
         ))}
         {starIdx.map((i) => (
           <Star3D key={`star-${i}`} x={i * S} collected={tiles[i] !== '★'} calm={calm} />
