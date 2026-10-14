@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { Component, lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { Tile } from '../../game/types'
 import type { BoardAnim } from '../game/Board3D'
 import { RobotAvatar } from '../robot/RobotAvatar'
@@ -27,11 +27,27 @@ function webgl() {
   }
 }
 
+/** Si Three.js falla al cargar, mostrar el robot 2D en vez de pantalla vacía. */
+class Soft3D extends Component<{ fallback: ReactNode; children: ReactNode }, { failed: boolean }> {
+  state = { failed: false }
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children
+  }
+}
+
 /** Mini tablero 3D que se juega solo en la portada. */
 export function HeroBoard({ calm }: { calm: boolean }) {
   const [i, setI] = useState(0)
   const ok = useMemo(() => webgl(), [])
   const step = SCRIPT[i]
+  const fallback = (
+    <div className="flex h-full min-h-[280px] items-center justify-center">
+      <RobotAvatar pose={['wave', 'happy']} size={220} />
+    </div>
+  )
 
   useEffect(() => {
     if (calm) return
@@ -43,20 +59,22 @@ export function HeroBoard({ calm }: { calm: boolean }) {
   const collected = shown.pos >= 4 && shown.kind !== 'idle'
   const tiles = DEMO.map((t, k) => (k === 4 && collected ? '.' : t)) as Tile[]
 
-  if (!ok) return <RobotAvatar pose={['wave', 'happy']} size={300} />
+  if (!ok) return fallback
 
   return (
     <div className="relative h-[320px] w-full max-w-xl overflow-hidden rounded-[2rem] border-[3px] border-white/80 bg-gradient-to-b from-[#cfe3ff] via-[#e4f0ff] to-[#eaf8ec] shadow-[var(--shadow-clay)] sm:h-[380px]">
-      <Suspense fallback={<div className="flex h-full items-center justify-center"><RobotAvatar pose="wave" size={180} /></div>}>
-        <Board3D
-          tiles={tiles}
-          baseTiles={DEMO}
-          position={shown.pos}
-          status={shown.kind === 'success' ? 'success' : 'running'}
-          anim={{ key: calm ? 0 : i + 1, kind: shown.kind, durationMs: shown.ms }}
-          calm={calm}
-        />
-      </Suspense>
+      <Soft3D fallback={fallback}>
+        <Suspense fallback={fallback}>
+          <Board3D
+            tiles={tiles}
+            baseTiles={DEMO}
+            position={shown.pos}
+            status={shown.kind === 'success' ? 'success' : 'running'}
+            anim={{ key: calm ? 0 : i + 1, kind: shown.kind, durationMs: shown.ms }}
+            calm={calm}
+          />
+        </Suspense>
+      </Soft3D>
       <div className="pointer-events-none absolute left-4 top-4 flex flex-col gap-2" aria-hidden>
         {['Avanzar 1', 'Saltar 1', 'Avanzar 3'].map((label, k) => (
           <span

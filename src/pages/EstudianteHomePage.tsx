@@ -9,6 +9,7 @@ import {
   Sparkles,
   Star,
   Trophy,
+  Zap,
   type LucideIcon,
 } from 'lucide-react'
 import type { CSSProperties } from 'react'
@@ -67,7 +68,7 @@ export function EstudianteHomePage() {
   return (
     <main className="mx-auto max-w-6xl px-5 py-8 sm:py-10">
       {/* Bienvenida con el robot */}
-      <section className="relative overflow-hidden rounded-[2rem] border-[3px] border-white/80 bg-gradient-to-br from-[#dcEAff] via-[#eef3ff] to-[#f3ecff] p-6 shadow-[var(--shadow-clay)] sm:p-8">
+      <section className="relative overflow-hidden rounded-[2rem] border-[3px] border-white/80 bg-gradient-to-br from-[#dceaff] via-[#eef3ff] to-[#f3ecff] p-6 shadow-[var(--shadow-clay)] sm:p-8">
         <div className="grid items-center gap-6 md:grid-cols-[minmax(0,1fr)_auto]">
           <div className="min-w-0 text-left">
             <p className="text-sm font-extrabold uppercase tracking-widest text-primary">Tu espacio</p>
@@ -81,8 +82,9 @@ export function EstudianteHomePage() {
 
             <ul className="mt-5 flex flex-wrap gap-3">
               <StatChip icon={Star} color="#e6a800" label="Estrellas" value={progress?.estrellasTotales ?? 0} />
+              <StatChip icon={Zap} color="#4d96ff" label="Puntos" value={progress?.puntosTotales ?? 0} />
               <StatChip icon={Award} color="#9b72e8" label="Insignias" value={progress?.badges.length ?? 0} />
-              <StatChip icon={Footprints} color="#4d96ff" label="Retos" value={`${totalDone}/${totalRetos}`} />
+              <StatChip icon={Footprints} color="#6bcb77" label="Retos" value={`${totalDone}/${totalRetos}`} />
             </ul>
 
             {next ? (

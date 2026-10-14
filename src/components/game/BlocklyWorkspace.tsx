@@ -2,6 +2,7 @@ import * as Blockly from 'blockly'
 import * as En from 'blockly/msg/en'
 import { useEffect, useRef } from 'react'
 import { buildToolbox, ensureBlocksDefined } from '../../blockly/blocks'
+import { enableWorkspaceMultiselect } from '../../blockly/multiselect'
 import { ensureIniciarBlock, getIniciarBlock } from '../../blockly/serialize'
 import type { BlockType } from '../../game/types'
 
@@ -56,6 +57,8 @@ export function BlocklyWorkspace({ availableBlocks, onReady, onDispose }: Props)
     onReadyRef.current?.(workspace)
     ;(window as unknown as { __cqWorkspace?: Blockly.WorkspaceSvg }).__cqWorkspace = workspace
 
+    const disposeMultiselect = enableWorkspaceMultiselect(workspace)
+
     const resize = () => Blockly.svgResize(workspace)
     resize()
     const ro = new ResizeObserver(resize)
@@ -69,6 +72,7 @@ export function BlocklyWorkspace({ availableBlocks, onReady, onDispose }: Props)
     })
 
     return () => {
+      disposeMultiselect()
       workspace.removeChangeListener(listener)
       ro.disconnect()
       window.removeEventListener('resize', resize)
@@ -81,7 +85,7 @@ export function BlocklyWorkspace({ availableBlocks, onReady, onDispose }: Props)
   return (
     <div
       ref={hostRef}
-      className="h-[min(70vh,620px)] min-h-[480px] w-full overflow-hidden rounded-3xl border-[3px] border-[#e6edf8] bg-surface shadow-[inset_0_2px_8px_rgba(46,70,140,0.06)]"
+      className="cq-blockly h-[min(70vh,620px)] min-h-[480px] w-full overflow-hidden rounded-3xl border-[3px] border-[#e6edf8] bg-surface shadow-[inset_0_2px_8px_rgba(46,70,140,0.06)]"
       aria-label="Área de bloques de programación"
     />
   )

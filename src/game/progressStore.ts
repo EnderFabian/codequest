@@ -3,16 +3,34 @@ import type { AttemptRecord } from './types'
 const ATTEMPTS_KEY = 'codequest-attempts'
 const PROGRESS_KEY = 'codequest-progress'
 
+export const MAX_LIVES = 5
+
 export type StudentProgress = {
   estudianteId: string
   completed: string[] // challengeIds como "nivel_1_secuenciacion:1.1"
   estrellasTotales: number
+  /** Puntos acumulados por eficiencia (menos bloques = más puntos). */
+  puntosTotales: number
+  /** Mejor puntuación por reto. */
+  bestScores: Record<string, number>
   badges: string[]
   attemptCounts: Record<string, number>
 }
 
 function challengeKey(levelId: string, retoId: string) {
   return `${levelId}:${retoId}`
+}
+
+function emptyProgress(estudianteId: string): StudentProgress {
+  return {
+    estudianteId,
+    completed: [],
+    estrellasTotales: 0,
+    puntosTotales: 0,
+    bestScores: {},
+    badges: [],
+    attemptCounts: {},
+  }
 }
 
 export function loadAttempts(estudianteId?: string): AttemptRecord[] {
@@ -36,23 +54,16 @@ export function loadProgress(estudianteId: string): StudentProgress {
       string,
       StudentProgress
     >
-    return (
-      map[estudianteId] ?? {
-        estudianteId,
-        completed: [],
-        estrellasTotales: 0,
-        badges: [],
-        attemptCounts: {},
-      }
-    )
-  } catch {
+    const raw = map[estudianteId]
+    if (!raw) return emptyProgress(estudianteId)
     return {
-      estudianteId,
-      completed: [],
-      estrellasTotales: 0,
-      badges: [],
-      attemptCounts: {},
+      ...emptyProgress(estudianteId),
+      ...raw,
+      bestScores: raw.bestScores ?? {},
+      puntosTotales: raw.puntosTotales ?? 0,
     }
+  } catch {
+    return emptyProgress(estudianteId)
   }
 }
 
@@ -90,6 +101,24 @@ export function markChallengeComplete(
   }
   writeProgress(progress)
   return progress
+}
+
+/** Guarda la mejor puntuación del reto y actualiza el total. */
+export function recordChallengeScore(
+  estudianteId: string,
+  levelId: string,
+  retoId: string,
+  points: number,
+) {
+  const progress = loadProgress(estudianteId)
+  const key = challengeKey(levelId, retoId)
+  const prev = progress.bestScores[key] ?? 0
+  if (points > prev) {
+    progress.puntosTotales = Math.max(0, progress.puntosTotales - prev + points)
+    progress.bestScores[key] = points
+    writeProgress(progress)
+  }
+  return { progress, awarded: points, best: progress.bestScores[key] ?? points, improved: points > prev }
 }
 
 export function isChallengeComplete(estudianteId: string, levelId: string, retoId: string) {

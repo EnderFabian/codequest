@@ -307,6 +307,16 @@ html.modo-calma .world-card:focus-within .world-card-inner {
   }
 }
 
+/* Selección múltiple de bloques (arrastre en el fondo) */
+.cq-blockly .blocklyPath.cq-multi-selected {
+  stroke: #4d96ff !important;
+  stroke-width: 4px !important;
+  filter: drop-shadow(0 0 6px rgba(77, 150, 255, 0.45));
+}
+.cq-blockly .cq-marquee {
+  pointer-events: none;
+}
+
 /* Globo de diálogo del robot en los retos */
 .speech {
   position: relative;

@@ -1,4 +1,5 @@
-import { Component, lazy, Suspense, useMemo, type ReactNode } from 'react'
+import { Component, lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Move, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react'
 import { ROBOT_FRAMES } from '../../assets/robot'
 import type { StepResult, Tile } from '../../game/types'
 import type { BoardAnim } from './Board3D'
@@ -16,6 +17,8 @@ type Props = {
   anim: BoardAnim
   calm?: boolean
   message?: string
+  /** Desactiva explorar mientras corre el programa. */
+  locked?: boolean
 }
 
 function hasWebGL() {
@@ -40,6 +43,7 @@ class Fallback3D extends Component<{ fallback: ReactNode; children: ReactNode },
 
 const TILE_SIZE = 64
 const GAP = 8
+const S = 1.2
 
 function tileVisual(tile: Tile) {
   switch (tile) {
@@ -98,14 +102,129 @@ function describe(tiles: Tile[], position: number) {
   }.`
 }
 
-export function GridWorld({ tiles, baseTiles, position, status, anim, calm = false, message }: Props) {
+export function GridWorld({
+  tiles,
+  baseTiles,
+  position,
+  status,
+  anim,
+  calm = false,
+  message,
+  locked = false,
+}: Props) {
   const safePos = Math.max(0, Math.min(position, Math.max(tiles.length - 1, 0)))
   const webgl = useMemo(() => hasWebGL(), [])
   const flat = <Board2D tiles={tiles} position={safePos} calm={calm} />
+  const width = Math.max(0, (tiles.length - 1) * S)
+
+  const [exploring, setExploring] = useState(false)
+  const [panX, setPanX] = useState(width / 2)
+  const [zoom, setZoom] = useState(1)
+  const drag = useRef<{ x: number; pan: number } | null>(null)
+
+  useEffect(() => {
+    if (locked && exploring) setExploring(false)
+  }, [locked, exploring])
+
+  useEffect(() => {
+    if (!exploring) setPanX(safePos * S)
+  }, [safePos, exploring])
+
+  useEffect(() => {
+    setPanX((p) => Math.min(Math.max(0, p), Math.max(0, width)))
+  }, [width])
+
+  function onPointerDown(e: React.PointerEvent) {
+    if (!exploring || locked) return
+    drag.current = { x: e.clientX, pan: panX }
+    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+  }
+
+  function onPointerMove(e: React.PointerEvent) {
+    if (!drag.current || !exploring) return
+    const dx = e.clientX - drag.current.x
+    // Arrastrar a la derecha mueve la vista a la izquierda (mapa se siente natural).
+    setPanX(drag.current.pan - dx * 0.018)
+  }
+
+  function onPointerUp() {
+    drag.current = null
+  }
 
   return (
     <div className="overflow-hidden rounded-3xl bg-gradient-to-b from-[#cfe3ff] via-[#e4f0ff] to-[#eaf8ec] shadow-[var(--shadow-soft)]">
-      <div className="relative h-[300px] w-full sm:h-[340px]" role="img" aria-label={describe(tiles, safePos)}>
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 pt-3">
+        <p className="text-xs font-bold text-ink-muted">
+          {exploring
+            ? 'Arrastra el mapa para ver todo el nivel'
+            : 'Explora el mapa para planear tu solución'}
+        </p>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <button
+            type="button"
+            className={[
+              'inline-flex min-h-9 items-center gap-1.5 rounded-xl border-2 px-3 text-sm font-extrabold transition-calm',
+              exploring
+                ? 'border-primary bg-primary text-white shadow-[0_3px_0_#2f6fd0]'
+                : 'border-border bg-surface text-ink shadow-[0_3px_0_#dbe3f0] hover:border-primary',
+            ].join(' ')}
+            onClick={() => {
+              if (locked) return
+              setExploring((v) => !v)
+              setPanX(safePos * S)
+            }}
+            disabled={locked}
+            aria-pressed={exploring}
+          >
+            <Move size={16} aria-hidden />
+            {exploring ? 'Explorando' : 'Explorar'}
+          </button>
+          <button
+            type="button"
+            className="inline-flex min-h-9 w-9 items-center justify-center rounded-xl border-2 border-border bg-surface text-ink shadow-[0_3px_0_#dbe3f0] disabled:opacity-40"
+            onClick={() => setZoom((z) => Math.max(0.6, +(z - 0.15).toFixed(2)))}
+            disabled={locked}
+            aria-label="Alejar"
+          >
+            <ZoomOut size={16} />
+          </button>
+          <button
+            type="button"
+            className="inline-flex min-h-9 w-9 items-center justify-center rounded-xl border-2 border-border bg-surface text-ink shadow-[0_3px_0_#dbe3f0] disabled:opacity-40"
+            onClick={() => setZoom((z) => Math.min(1.5, +(z + 0.15).toFixed(2)))}
+            disabled={locked}
+            aria-label="Acercar"
+          >
+            <ZoomIn size={16} />
+          </button>
+          <button
+            type="button"
+            className="inline-flex min-h-9 w-9 items-center justify-center rounded-xl border-2 border-border bg-surface text-ink shadow-[0_3px_0_#dbe3f0] disabled:opacity-40"
+            onClick={() => {
+              setPanX(safePos * S)
+              setZoom(1)
+            }}
+            disabled={locked}
+            aria-label="Centrar en el robot"
+            title="Centrar"
+          >
+            <RotateCcw size={16} />
+          </button>
+        </div>
+      </div>
+
+      <div
+        className={[
+          'relative h-[300px] w-full sm:h-[340px]',
+          exploring && !locked ? 'cursor-grab active:cursor-grabbing' : '',
+        ].join(' ')}
+        role="img"
+        aria-label={describe(tiles, safePos)}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      >
         {webgl ? (
           <Fallback3D fallback={flat}>
             <Suspense
@@ -122,6 +241,9 @@ export function GridWorld({ tiles, baseTiles, position, status, anim, calm = fal
                 status={status}
                 anim={anim}
                 calm={calm}
+                panX={panX}
+                zoom={zoom}
+                exploring={exploring && !locked}
               />
             </Suspense>
           </Fallback3D>

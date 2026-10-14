@@ -1,4 +1,5 @@
 import type { WorkspaceSvg } from 'blockly'
+import { Heart, Sparkles } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { countTopBlocks, serializeWorkspace } from '../../blockly/serialize'
@@ -13,9 +14,13 @@ import {
 import {
   bumpAttemptCount,
   isLevelComplete,
+  loadProgress,
   markChallengeComplete,
+  MAX_LIVES,
+  recordChallengeScore,
   saveAttempt,
 } from '../../game/progressStore'
+import { countProgramBlocks, estimateOptimalBlocks, scoreFromBlocks } from '../../game/scoring'
 import type { StepResult, Tile } from '../../game/types'
 import { RobotAvatar } from '../robot/RobotAvatar'
 import { Button } from '../ui/Button'
@@ -62,6 +67,9 @@ export function ChallengePage() {
   const [feedback, setFeedback] = useState('')
   const [won, setWon] = useState(false)
   const [error, setError] = useState('')
+  const [lives, setLives] = useState(MAX_LIVES)
+  const [lastScore, setLastScore] = useState<number | null>(null)
+  const [puntosTotales, setPuntosTotales] = useState(0)
   const [anim, setAnim] = useState<BoardAnim>({ key: 0, kind: 'idle', durationMs: 400 })
   const animKey = useRef(0)
   const playAnim = useCallback((kind: BoardAnim['kind'], durationMs: number) => {
@@ -90,16 +98,20 @@ export function ChallengePage() {
     setWon(false)
     setError('')
     setRunning(false)
+    setLives(MAX_LIVES)
+    setLastScore(null)
     runningRef.current = false
     runIdRef.current += 1
     startedAt.current = Date.now()
     playAnim('idle', 300)
-  }, [levelId, retoId, playAnim])
+    if (user) setPuntosTotales(loadProgress(user.id).puntosTotales)
+  }, [levelId, retoId, playAnim, user])
 
   const handleRun = useCallback(async () => {
     setError('')
     setFeedback('')
     setWon(false)
+    setLastScore(null)
 
     if (runningRef.current) {
       setError('Ya hay un programa en ejecución.')
@@ -107,6 +119,10 @@ export function ChallengePage() {
     }
     if (!user) {
       setError('Debes iniciar sesión para correr el reto.')
+      return
+    }
+    if (lives <= 0) {
+      setError('Sin vidas. Pulsa Reiniciar para volver a intentar.')
       return
     }
 
@@ -201,19 +217,47 @@ export function ChallengePage() {
       })
 
       if (acierto) {
+        const used = countProgramBlocks(program)
+        const optimal = estimateOptimalBlocks(challenge.solucionEjemplo)
+        const points = scoreFromBlocks(used, optimal)
+        const { progress, improved } = recordChallengeScore(
+          user.id,
+          level.levelId,
+          challenge.retoId,
+          points,
+        )
+        setLastScore(points)
+        setPuntosTotales(progress.puntosTotales)
+
         const ids = level.retos.map((r) => r.retoId)
         const before = isLevelComplete(user.id, level.levelId, ids)
         markChallengeComplete(user.id, level.levelId, challenge.retoId)
         const after = isLevelComplete(user.id, level.levelId, ids)
+        const badgeNote =
+          !before && after
+            ? ` Insignia: ${level.insigniaAlCompletar}.`
+            : ''
+        setFeedback(
+          `¡Lo lograste! ${points} pts (${used} bloques)${
+            improved ? ' · nuevo récord' : ''
+          }.${badgeNote}`,
+        )
         if (!before && after) {
           markChallengeComplete(user.id, level.levelId, challenge.retoId, level.insigniaAlCompletar)
-          setFeedback(`¡Lo lograste! Insignia: ${level.insigniaAlCompletar}`)
-        } else {
-          setFeedback('¡Lo lograste!')
         }
         setWon(true)
       } else {
-        setFeedback(last?.message || 'Casi lo tienes, ¡inténtalo de nuevo!')
+        setLives((n) => {
+          const next = Math.max(0, n - 1)
+          if (next <= 0) {
+            setFeedback('Sin vidas. Pulsa Reiniciar para intentar de nuevo.')
+          } else {
+            setFeedback(
+              `${last?.message || 'Casi lo tienes'} · Te quedan ${next} vida${next === 1 ? '' : 's'}.`,
+            )
+          }
+          return next
+        })
       }
     } finally {
       if (runIdRef.current === runId) {
@@ -221,7 +265,7 @@ export function ChallengePage() {
         setRunning(false)
       }
     }
-  }, [user, levelId, retoId, calmMode, playAnim])
+  }, [user, levelId, retoId, calmMode, playAnim, lives])
 
   useEffect(() => {
     ;(window as unknown as { __cqRun?: () => void }).__cqRun = () => {
@@ -262,6 +306,8 @@ export function ChallengePage() {
     setWon(false)
     setError('')
     setRunning(false)
+    setLives(MAX_LIVES)
+    setLastScore(null)
     startedAt.current = Date.now()
     playAnim('idle', 300)
   }
@@ -299,6 +345,31 @@ export function ChallengePage() {
                 </span>
               ) : null}
             </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2" aria-label="Vidas y puntos">
+              <div
+                className="inline-flex items-center gap-1 rounded-2xl border-2 border-border bg-surface px-3 py-1.5 shadow-[0_3px_0_#dbe3f0]"
+                title="Vidas"
+              >
+                {Array.from({ length: MAX_LIVES }, (_, i) => (
+                  <Heart
+                    key={i}
+                    size={18}
+                    aria-hidden
+                    className={i < lives ? 'fill-[#ff6b8a] text-[#ff6b8a]' : 'text-[#d5dbe8]'}
+                  />
+                ))}
+                <span className="sr-only">
+                  {lives} de {MAX_LIVES} vidas
+                </span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 rounded-2xl border-2 border-border bg-surface px-3 py-1.5 text-sm font-extrabold text-ink shadow-[0_3px_0_#dbe3f0]">
+                <Sparkles size={16} className="text-accent" aria-hidden />
+                {puntosTotales} pts
+                {lastScore != null ? (
+                  <span className="rounded-lg bg-accent-soft px-2 py-0.5 text-xs">+{lastScore}</span>
+                ) : null}
+              </div>
+            </div>
           </div>
         </div>
         <Link to="/estudiante" className="no-underline">
@@ -310,8 +381,9 @@ export function ChallengePage() {
         <Surface className="order-1 text-left">
           <h2 className="mb-3 text-lg font-extrabold text-ink">Tus bloques</h2>
           <p className="mb-3 text-sm text-ink-muted">
-            Arrastra bloques desde la izquierda y suéltalos <strong>dentro</strong> del bloque azul{' '}
-            <strong>Iniciar</strong>. Cambia los números si hace falta y pulsa <strong>¡Correr!</strong>
+            Arrastra bloques dentro de <strong>Iniciar</strong>. Arrastra en el fondo para seleccionar
+            varios y usa <strong>Ctrl+C / Ctrl+V</strong> para copiar y pegar. Menos bloques = más
+            puntos.
           </p>
           <BlocklyWorkspace
             availableBlocks={level.bloquesDisponibles}
@@ -334,6 +406,7 @@ export function ChallengePage() {
             anim={anim}
             calm={calmMode}
             message={feedback || step?.message}
+            locked={running}
           />
           <div className="flex flex-wrap gap-3">
             <Button
@@ -341,7 +414,7 @@ export function ChallengePage() {
               variant="primary"
               size="lg"
               onClick={() => void handleRun()}
-              disabled={running}
+              disabled={running || lives <= 0}
             >
               {running ? 'Corriendo…' : '¡Correr!'}
             </Button>

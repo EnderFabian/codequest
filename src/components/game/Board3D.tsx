@@ -24,6 +24,12 @@ type Props = {
   status: StepResult['status']
   anim: BoardAnim
   calm: boolean
+  /** Desplazamiento horizontal del mapa (exploración con arrastre). */
+  panX?: number
+  /** Zoom de cámara (1 = normal). */
+  zoom?: number
+  /** Si true, la cámara no sigue al robot (modo explorar). */
+  exploring?: boolean
 }
 
 const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2)
@@ -334,24 +340,58 @@ function Robot({
   )
 }
 
-function CameraRig({ width, robotX }: { width: number; robotX: React.RefObject<number> }) {
+function CameraRig({
+  width,
+  robotX,
+  panX = 0,
+  zoom = 1,
+  exploring = false,
+}: {
+  width: number
+  robotX: React.RefObject<number>
+  panX?: number
+  zoom?: number
+  exploring?: boolean
+}) {
   const { camera, size } = useThree()
   const target = useRef(new THREE.Vector3())
   useFrame((_, dt) => {
     const narrow = size.width < 640
-    const visible = narrow ? 3.6 : 6
+    const z = Math.max(0.55, Math.min(1.6, zoom))
+    const visible = (narrow ? 3.6 : 6) / z
     let cx: number
-    if (width <= visible) cx = width / 2
-    else cx = THREE.MathUtils.clamp((robotX.current ?? 0) + 1.2, visible / 2 - 0.4, width - visible / 2 + 0.4)
-    const dist = narrow ? 6.4 : 6.6
-    target.current.x = THREE.MathUtils.damp(target.current.x, cx, 4, dt)
-    camera.position.set(target.current.x - 0.5, 3.6, dist)
+    if (exploring) {
+      const min = visible / 2 - 0.4
+      const max = Math.max(min, width - visible / 2 + 0.4)
+      cx = THREE.MathUtils.clamp(panX, min, max)
+    } else if (width <= visible) {
+      cx = width / 2
+    } else {
+      cx = THREE.MathUtils.clamp(
+        (robotX.current ?? 0) + 1.2,
+        visible / 2 - 0.4,
+        width - visible / 2 + 0.4,
+      )
+    }
+    const dist = (narrow ? 6.4 : 6.6) / z
+    target.current.x = THREE.MathUtils.damp(target.current.x, cx, exploring ? 8 : 4, dt)
+    camera.position.set(target.current.x - 0.5, 3.6 / Math.sqrt(z), dist)
     camera.lookAt(target.current.x, 0.5, 0)
   })
   return null
 }
 
-export function Board3D({ tiles, baseTiles, position, status, anim, calm }: Props) {
+export function Board3D({
+  tiles,
+  baseTiles,
+  position,
+  status,
+  anim,
+  calm,
+  panX = 0,
+  zoom = 1,
+  exploring = false,
+}: Props) {
   const width = (tiles.length - 1) * S
   const robotX = useRef(position * S)
   const starIdx = baseTiles.map((t, i) => (t === '★' ? i : -1)).filter((i) => i >= 0)
@@ -363,7 +403,7 @@ export function Board3D({ tiles, baseTiles, position, status, anim, calm }: Prop
       dpr={[1, 2]}
       camera={{ fov: 38, position: [width / 2, 4, 8], near: 0.1, far: 100 }}
       gl={{ alpha: true, antialias: true }}
-      style={{ width: '100%', height: '100%' }}
+      style={{ width: '100%', height: '100%', touchAction: exploring ? 'none' : 'auto' }}
     >
       <hemisphereLight args={['#ffffff', '#b9d4ff', 1.1]} />
       <directionalLight
@@ -395,7 +435,7 @@ export function Board3D({ tiles, baseTiles, position, status, anim, calm }: Prop
         />
         <Clouds width={width} calm={calm} />
       </group>
-      <CameraRig width={width} robotX={robotX} />
+      <CameraRig width={width} robotX={robotX} panX={panX} zoom={zoom} exploring={exploring} />
     </Canvas>
   )
 }
