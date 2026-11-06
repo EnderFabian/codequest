@@ -1,0 +1,11 @@
+{
+  "name": "codequest",
+  "version": "1.0.0",
+  "description": "Plataforma inclusiva de programación visual para niños con TEA",
+  "scripts": {
+    "start": "npx --yes serve . -p 3000",
+    "dev": "npx --yes serve . -p 3000"
+  },
+  "keywords": ["educacion", "tea", "programacion", "bloques"],
+  "license": "MIT"
+}

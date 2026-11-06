@@ -1,0 +1,50 @@
+:root {
+  --purple-primary: #7c5cbf;
+  --purple-dark: #5a3d9e;
+  --purple-light: #e8dff5;
+  --purple-soft: #f3eef9;
+  --orange-accent: #f5a623;
+  --green-action: #4caf50;
+  --green-light: #e8f5e9;
+  --blue-movement: #4a90d9;
+  --blue-movement-dark: #357abd;
+  --yellow-events: #f5c842;
+  --orange-control: #e8913a;
+  --pink-operators: #e07aaa;
+  --teal-sensors: #5cb8a8;
+  --cyan-variables: #5bb5d4;
+  --grey-blocks: #9e9e9e;
+  --red-stop: #e57373;
+  --orange-step: #ff9800;
+  --bg-main: #f8f6fc;
+  --bg-card: #ffffff;
+  --text-primary: #3d2e5c;
+  --text-secondary: #6b5b8a;
+  --border-soft: #e0d8ec;
+  --shadow-soft: 0 4px 20px rgba(124, 92, 191, 0.12);
+  --shadow-block: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --font-main: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  --font-size-base: 18px;
+  --font-size-lg: 22px;
+  --font-size-xl: 28px;
+  --transition-calm: 0.35s ease;
+  --header-height: 72px;
+  --block-motion: #4a90d9;
+  --block-events: #5cb85c;
+  --block-control: #e8913a;
+  --block-appearance: #9b59b6;
+}
+
+[data-theme="dark"] {
+  --bg-main: #1e1a2e;
+  --bg-card: #2a2540;
+  --text-primary: #f0eaf8;
+  --text-secondary: #b8a8d4;
+  --border-soft: #3d3558;
+  --purple-soft: #2a2540;
+  --purple-light: #352f4a;
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+}

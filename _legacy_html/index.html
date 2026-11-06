@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CodeQuest - Plataforma inclusiva para enseñar programación a niños con TEA mediante bloques visuales">
+  <title>CodeQuest - Aprender a programar es una aventura</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo-wrap">
+      <div class="logo-icon" aria-hidden="true">&lt;/&gt;<span class="star">⭐</span></div>
+      <div class="logo-text">
+        <h1>CodeQuest</h1>
+        <span>Aprender es una aventura</span>
+      </div>
+    </div>
+    <nav class="nav-main" aria-label="Navegación principal">
+      <a href="pages/niveles.html" class="nav-btn">Niveles</a>
+      <a href="pages/perfil.html" class="nav-btn">Mi Perfil</a>
+      <a href="pages/logros.html" class="nav-btn">Logros</a>
+    </nav>
+    <div class="header-actions">
+      <a href="pages/panel-cuidadores.html" class="btn-caregiver">Panel de Cuidadores</a>
+      <button class="icon-btn" id="btnSettings" aria-label="Configuración" title="Configuración">⚙️</button>
+      <button class="icon-btn" id="btnSound" aria-label="Activar o desactivar sonidos" title="Sonido">🔊</button>
+      <button class="avatar-btn" aria-label="Mi perfil" onclick="location.href='pages/perfil.html'">👦</button>
+    </div>
+  </header>
+
+  <div class="settings-panel" id="settingsPanel" role="dialog" aria-label="Configuración de accesibilidad">
+    <h3>⚙️ Ajustes para ti</h3>
+    <div class="setting-row">
+      <label for="themeToggle">Modo oscuro</label>
+      <input type="checkbox" id="themeToggle">
+    </div>
+    <div class="setting-row">
+      <label for="reduceMotion">Menos animaciones</label>
+      <input type="checkbox" id="reduceMotion">
+    </div>
+    <div class="setting-row">
+      <label for="soundToggle">Sonidos</label>
+      <input type="checkbox" id="soundToggle" checked>
+    </div>
+    <div class="setting-row">
+      <label for="musicToggle">Música relajante</label>
+      <input type="checkbox" id="musicToggle">
+    </div>
+    <div class="setting-row">
+      <label for="colorTheme">Color principal</label>
+      <select id="colorTheme">
+        <option value="purple">Morado suave</option>
+        <option value="blue">Azul tranquilo</option>
+        <option value="green">Verde natural</option>
+      </select>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div class="hero-bg" aria-hidden="true">
+      <div class="floating-block">mover pasos</div>
+      <div class="floating-block">repetir</div>
+      <div class="floating-block">si entonces</div>
+      <div class="floating-block">girar</div>
+    </div>
+    <div class="container hero-content">
+      <div class="hero-text">
+        <h2>Aprender a programar también es una aventura para todos</h2>
+        <p>CodeQuest es un espacio seguro, divertido e inclusivo donde cada niño y niña puede descubrir el mundo de la programación con bloques visuales, a su ritmo.</p>
+        <a href="pages/niveles.html" class="btn-primary" id="btnStart">🚀 Comenzar Aventura</a>
+      </div>
+      <div class="hero-illustration" aria-hidden="true">
+        <div class="kid-card">👧</div>
+        <div class="kid-card">👦</div>
+        <div class="kid-card">🧒</div>
+        <div class="kid-card">👩</div>
+        <div class="kid-card">🤖</div>
+        <div class="kid-card">🦕</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="que-es">
+    <div class="container">
+      <h2 class="section-title">¿Qué es CodeQuest?</h2>
+      <p class="section-subtitle">Una plataforma inclusiva diseñada para enseñar programación básica a niños y niñas con TEA, usando retos visuales, bloques interactivos y mucho apoyo emocional.</p>
+      <div class="cards-grid">
+        <article class="info-card">
+          <div class="icon">🧩</div>
+          <h3>Bloques visuales</h3>
+          <p>Programa arrastrando bloques de colores, como en Scratch o Pilas Bloques. Sin escribir código complicado.</p>
+        </article>
+        <article class="info-card">
+          <div class="icon">🎯</div>
+          <h3>Misiones y aventuras</h3>
+          <p>Cada nivel es una misión: mover personajes, encontrar tesoros y resolver laberintos.</p>
+        </article>
+        <article class="info-card">
+          <div class="icon">💜</div>
+          <h3>Diseño para TEA</h3>
+          <p>Colores suaves, iconos grandes, instrucciones claras y sin sobrecarga visual.</p>
+        </article>
+        <article class="info-card">
+          <div class="icon">🏆</div>
+          <h3>Recompensas positivas</h3>
+          <p>Estrellas, logros y mensajes que celebran cada logro, por pequeño que sea.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background: var(--purple-soft);">
+    <div class="container">
+      <h2 class="section-title">Sistema de programación por bloques</h2>
+      <p class="section-subtitle">Movimiento, repetición, condicionales, sonidos y más. Todo en un editor visual amigable.</p>
+      <div class="cards-grid">
+        <article class="info-card"><div class="icon" style="color: var(--blue-movement);">➡️</div><h3>Movimiento</h3><p>Mueve tu personaje paso a paso.</p></article>
+        <article class="info-card"><div class="icon" style="color: var(--orange-control);">🔁</div><h3>Repetición</h3><p>Usa ciclos para repetir acciones.</p></article>
+        <article class="info-card"><div class="icon" style="color: var(--yellow-events);">⚡</div><h3>Eventos</h3><p>Empieza cuando pulses ejecutar.</p></article>
+        <article class="info-card"><div class="icon" style="color: var(--teal-sensors);">👁️</div><h3>Condicionales</h3><p>Toma decisiones con «si entonces».</p></article>
+      </div>
+      <p style="text-align: center; margin-top: 2rem;">
+        <a href="pages/niveles.html" class="btn-primary">Ir al editor de niveles</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Niveles y misiones</h2>
+      <p class="section-subtitle">Cada nivel tiene barra de progreso, estrellas y mensajes motivadores.</p>
+      <div class="levels-preview" id="levelsPreview"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="inclusion-banner">
+        <blockquote>«Todos aprendemos de formas diferentes, y todas son increíbles. En CodeQuest, tu forma de pensar es un superpoder.»</blockquote>
+      </div>
+      <div class="cards-grid">
+        <article class="info-card"><h3>🌈 Inclusión social</h3><p>Personajes diversos y un espacio donde todos pertenecen.</p></article>
+        <article class="info-card"><h3>🧠 Neurodiversidad</h3><p>Respetamos y celebramos mentes únicas.</p></article>
+        <article class="info-card"><h3>📚 Aprendizaje adaptativo</h3><p>Ritmo personal, ayudas visuales y auditivas.</p></article>
+        <article class="info-card"><h3>♿ Educación accesible</h3><p>Tipografía grande, alto contraste y navegación simple.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background: var(--bg-card); border-top: 2px solid var(--border-soft);">
+    <div class="container" style="text-align: center;">
+      <h2 class="section-title">Panel para cuidadores</h2>
+      <p class="section-subtitle">Padres y educadores pueden ver el avance, tiempo de uso, habilidades desarrolladas y recomendaciones de apoyo.</p>
+      <a href="pages/panel-cuidadores.html" class="btn-primary">Abrir Panel de Cuidadores</a>
+    </div>
+  </section>
+
+  <div class="mascot-float" id="mascotBtn" role="button" tabindex="0" aria-label="Ayuda de Robi la mascota">🤖</div>
+  <div class="mascot-tip" id="mascotTip">¡Hola! Soy Robi. Si necesitas ayuda, haz clic en mí o en el botón Ayuda dentro de los niveles. 💜</div>
+
+  <footer class="site-footer">
+    💖 En CodeQuest creemos en ti. Cada paso que das te hace increíble. 💛
+  </footer>
+
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/audio.js"></script>
+  <script src="assets/js/accessibility.js"></script>
+  <script src="assets/js/levels-data.js"></script>
+  <script>
+    document.getElementById('levelsPreview').innerHTML = LEVELS_DATA.map((l, i) => `
+      <a href="pages/niveles.html?nivel=${i + 1}" class="level-card">
+        <div style="font-size:2rem;margin-bottom:0.5rem">${l.icon}</div>
+        <strong>Nivel ${i + 1}</strong>
+        <p>${l.title}</p>
+        <div class="stars">${'★'.repeat(l.starsEarned || 0)}${'☆'.repeat(3 - (l.starsEarned || 0))}</div>
+      </a>
+    `).join('');
+  </script>
+</body>
+</html>

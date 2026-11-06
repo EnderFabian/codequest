@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeQuest - Niveles</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/niveles.css">
+</head>
+<body class="niveles-page">
+  <header class="niveles-header site-header">
+    <div class="logo-wrap">
+      <a href="../index.html" class="logo-wrap" style="text-decoration:none">
+        <div class="logo-icon">&lt;/&gt;<span class="star">⭐</span></div>
+        <div class="logo-text">
+          <h1>CodeQuest</h1>
+          <span>Aprender es una aventura</span>
+        </div>
+      </a>
+    </div>
+    <nav class="nav-main" aria-label="Navegación">
+      <a href="niveles.html" class="nav-btn active">Niveles</a>
+      <a href="perfil.html" class="nav-btn">Mi Perfil</a>
+      <a href="logros.html" class="nav-btn">Logros</a>
+    </nav>
+    <div class="header-actions">
+      <a href="panel-cuidadores.html" class="btn-caregiver">Panel de Cuidadores</a>
+      <button class="icon-btn" id="btnSettings" aria-label="Configuración">⚙️</button>
+      <button class="icon-btn" id="btnSound" aria-label="Sonido">🔊</button>
+      <button class="avatar-btn" id="headerAvatar" onclick="location.href='perfil.html'">👦</button>
+    </div>
+  </header>
+
+  <div class="settings-panel" id="settingsPanel">
+    <h3>⚙️ Ajustes para ti</h3>
+    <div class="setting-row"><label for="themeToggle">Modo oscuro</label><input type="checkbox" id="themeToggle"></div>
+    <div class="setting-row"><label for="reduceMotion">Menos animaciones</label><input type="checkbox" id="reduceMotion"></div>
+    <div class="setting-row"><label for="soundToggle">Sonidos</label><input type="checkbox" id="soundToggle" checked></div>
+    <div class="setting-row"><label for="musicToggle">Música relajante</label><input type="checkbox" id="musicToggle"></div>
+    <div class="setting-row">
+      <label for="colorTheme">Color principal</label>
+      <select id="colorTheme">
+        <option value="purple">Morado suave</option>
+        <option value="blue">Azul tranquilo</option>
+        <option value="green">Verde natural</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="level-picker" id="levelPicker" role="tablist" aria-label="Seleccionar nivel"></div>
+
+  <main class="niveles-main">
+    <aside class="block-categories" aria-label="Categorías de bloques">
+      <button class="category-btn cat-movimiento" data-cat="movimiento">➡️ Movimiento</button>
+      <button class="category-btn cat-apariencia" data-cat="apariencia">👁️ Apariencia</button>
+      <button class="category-btn cat-eventos" data-cat="eventos">⚡ Eventos</button>
+      <button class="category-btn cat-control active" data-cat="control">🔁 Control</button>
+      <button class="category-btn cat-sensores" data-cat="sensores">📡 Sensores</button>
+      <button class="category-btn cat-operadores" data-cat="operadores">➕ Operadores</button>
+      <button class="category-btn cat-variables" data-cat="variables">📦 Variables</button>
+      <button class="category-btn cat-misbloques" data-cat="misbloques">🧩 Mis Bloques</button>
+    </aside>
+
+    <aside class="block-palette" id="blockPalette" aria-label="Bloques disponibles"></aside>
+
+    <section class="workspace-panel">
+      <div class="workspace-header">
+        <h2>Área de programación</h2>
+        <div class="workspace-tools">
+          <button class="tool-btn" id="btnUndo" title="Deshacer" aria-label="Deshacer">↩️</button>
+          <button class="tool-btn" id="btnClear" title="Limpiar todo" aria-label="Limpiar">🗑️</button>
+        </div>
+      </div>
+      <div class="workspace-area" id="workspace" aria-label="Zona para armar tu programa">
+        <div class="block-stack" id="blockStack"></div>
+      </div>
+    </section>
+
+    <section class="game-panel">
+      <div class="level-title-bar">
+        <h2 id="levelTitle">Nivel 3: El camino del tesoro</h2>
+        <div class="level-stars" id="levelStars" aria-label="Estrellas">★★☆</div>
+      </div>
+      <div class="game-stage-wrap">
+        <div class="game-grid" id="gameGrid" role="img" aria-label="Mapa del nivel"></div>
+      </div>
+      <div class="run-controls">
+        <button class="run-btn btn-run" id="btnRun">▶ Ejecutar</button>
+        <button class="run-btn btn-step" id="btnStep">⏭ Paso a paso</button>
+        <button class="run-btn btn-stop" id="btnStop">⏹ Detener</button>
+      </div>
+      <div class="mission-box">
+        <span class="mission-mascot" aria-hidden="true">🤖</span>
+        <p class="mission-text" id="missionText">Tu misión: Lleva a nuestro amigo hasta el tesoro. Usa los bloques para crear un camino.</p>
+        <button class="mission-speak" id="btnSpeakMission" aria-label="Escuchar misión">🔊</button>
+      </div>
+    </section>
+
+    <footer class="niveles-bottom">
+      <button class="btn-help" id="btnHelp">🤖 Ayuda</button>
+      <div class="char-selector">
+        <span class="label">Elige tu personaje</span>
+        <div class="char-list" id="charList" role="listbox" aria-label="Personajes"></div>
+      </div>
+      <div class="progress-section">
+        <label>Mi progreso en este nivel</label>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:66%"></div></div>
+          <span class="progress-pct" id="progressPct">66%</span>
+        </div>
+        <div class="attempts">
+          <span>Intentos</span>
+          <span class="heart">❤️</span>
+          <span id="attemptsCount">2</span>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <footer class="niveles-footer">
+    💖 En CodeQuest creemos en ti. Cada paso que das te hace increíble. 💛
+  </footer>
+
+  <div class="toast-positive" id="toastPositive" role="status"></div>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/audio.js"></script>
+  <script src="../assets/js/accessibility.js"></script>
+  <script src="../assets/js/levels-data.js"></script>
+  <script src="../assets/js/blocks.js"></script>
+  <script src="../assets/js/editor.js"></script>
+  <script src="../assets/js/game-engine.js"></script>
+  <script src="../assets/js/niveles-app.js"></script>
+</body>
+</html>

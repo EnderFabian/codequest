@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeQuest - Logros</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo-wrap">
+      <a href="../index.html" style="display:flex;align-items:center;gap:0.75rem;text-decoration:none">
+        <div class="logo-icon">&lt;/&gt;<span class="star">⭐</span></div>
+        <div class="logo-text"><h1>CodeQuest</h1><span>Logros</span></div>
+      </a>
+    </div>
+    <nav class="nav-main">
+      <a href="niveles.html" class="nav-btn">Niveles</a>
+      <a href="perfil.html" class="nav-btn">Mi Perfil</a>
+      <a href="logros.html" class="nav-btn active">Logros</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" id="btnSettings">⚙️</button>
+      <button class="icon-btn" id="btnSound">🔊</button>
+    </div>
+  </header>
+
+  <div class="settings-panel" id="settingsPanel">
+    <h3>⚙️ Ajustes</h3>
+    <div class="setting-row"><label for="themeToggle">Modo oscuro</label><input type="checkbox" id="themeToggle"></div>
+    <div class="setting-row"><label for="reduceMotion">Menos animaciones</label><input type="checkbox" id="reduceMotion"></div>
+    <div class="setting-row"><label for="soundToggle">Sonidos</label><input type="checkbox" id="soundToggle" checked></div>
+  </div>
+
+  <main class="section">
+    <div class="container">
+      <h2 class="section-title">🏆 Tus logros</h2>
+      <p class="section-subtitle">Cada logro es una celebración de tu esfuerzo y tu creatividad.</p>
+      <div class="cards-grid" id="achievementsGrid"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">💖 En CodeQuest creemos en ti. 💛</footer>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/audio.js"></script>
+  <script src="../assets/js/accessibility.js"></script>
+  <script>
+    const ALL_ACHIEVEMENTS = [
+      { id: 'first_step', name: 'Primer paso', desc: 'Ejecuta tu primer programa', icon: '👣' },
+      { id: 'level_1', name: 'Explorador novato', desc: 'Completa el nivel 1', icon: '🌱' },
+      { id: 'level_3', name: 'Buscador de tesoros', desc: 'Avanza en el camino del tesoro', icon: '📦' },
+      { id: 'master_3', name: 'Maestro del tesoro', desc: 'Completa el nivel 3 al 100%', icon: '👑' },
+      { id: 'loop_hero', name: 'Héroe de los ciclos', desc: 'Usa bloques REPETIR', icon: '🔁' },
+      { id: 'brave_heart', name: 'Corazón valiente', desc: 'Sigue intentando después de un error', icon: '❤️' }
+    ];
+
+    const unlocked = (loadProgress().achievements || []).map(a => a.id);
+
+    document.getElementById('achievementsGrid').innerHTML = ALL_ACHIEVEMENTS.map(a => {
+      const has = unlocked.includes(a.id) || unlocked.some(u => u.startsWith('level_'));
+      const isUnlocked = unlocked.includes(a.id);
+      return `<article class="info-card" style="opacity:${isUnlocked ? 1 : 0.55}">
+        <div class="icon">${a.icon}</div>
+        <h3>${a.name} ${isUnlocked ? '✅' : '🔒'}</h3>
+        <p>${a.desc}</p>
+      </article>`;
+    }).join('');
+  </script>
+</body>
+</html>

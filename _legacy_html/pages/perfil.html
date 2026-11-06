@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeQuest - Mi Perfil</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo-wrap">
+      <a href="../index.html" style="display:flex;align-items:center;gap:0.75rem;text-decoration:none">
+        <div class="logo-icon">&lt;/&gt;<span class="star">⭐</span></div>
+        <div class="logo-text"><h1>CodeQuest</h1><span>Mi Perfil</span></div>
+      </a>
+    </div>
+    <nav class="nav-main">
+      <a href="niveles.html" class="nav-btn">Niveles</a>
+      <a href="perfil.html" class="nav-btn active">Mi Perfil</a>
+      <a href="logros.html" class="nav-btn">Logros</a>
+    </nav>
+    <div class="header-actions">
+      <a href="panel-cuidadores.html" class="btn-caregiver">Panel de Cuidadores</a>
+      <button class="icon-btn" id="btnSettings">⚙️</button>
+      <button class="icon-btn" id="btnSound">🔊</button>
+    </div>
+  </header>
+
+  <div class="settings-panel" id="settingsPanel">
+    <h3>⚙️ Ajustes para ti</h3>
+    <div class="setting-row"><label for="themeToggle">Modo oscuro</label><input type="checkbox" id="themeToggle"></div>
+    <div class="setting-row"><label for="reduceMotion">Menos animaciones</label><input type="checkbox" id="reduceMotion"></div>
+    <div class="setting-row"><label for="soundToggle">Sonidos</label><input type="checkbox" id="soundToggle" checked></div>
+    <div class="setting-row"><label for="colorTheme">Color principal</label>
+      <select id="colorTheme"><option value="purple">Morado</option><option value="blue">Azul</option><option value="green">Verde</option></select>
+    </div>
+  </div>
+
+  <main class="section">
+    <div class="container" style="max-width:600px;text-align:center">
+      <div style="font-size:5rem;margin-bottom:1rem" id="profileAvatar">👦</div>
+      <label style="font-weight:700;display:block;margin-bottom:0.5rem">Tu nombre de explorador</label>
+      <input type="text" id="playerName" style="width:100%;max-width:320px;padding:0.75rem 1rem;font-size:1.2rem;border-radius:999px;border:2px solid var(--purple-primary);font-family:inherit;text-align:center;margin-bottom:2rem">
+
+      <div class="info-card" style="text-align:left">
+        <h3>📊 Tu resumen</h3>
+        <p id="profileSummary"></p>
+      </div>
+
+      <p style="margin-top:2rem">
+        <a href="niveles.html" class="btn-primary">Seguir aprendiendo</a>
+      </p>
+    </div>
+  </main>
+
+  <footer class="site-footer">💖 En CodeQuest creemos en ti. 💛</footer>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/audio.js"></script>
+  <script src="../assets/js/accessibility.js"></script>
+  <script src="../assets/js/levels-data.js"></script>
+  <script>
+    const p = loadProgress();
+    document.getElementById('profileAvatar').textContent = p.avatar || '👦';
+    document.getElementById('playerName').value = p.playerName || 'Explorador';
+
+    const stars = Object.values(p.levels || {}).reduce((s, l) => s + (l.stars || 0), 0);
+    document.getElementById('profileSummary').innerHTML = `
+      <strong>Estrellas:</strong> ${stars} ⭐<br>
+      <strong>Tiempo jugado:</strong> ${p.totalTimeMinutes || 0} minutos<br>
+      <strong>Logros:</strong> ${(p.achievements || []).length}<br>
+      <em>«Cada paso que das te hace increíble.»</em>
+    `;
+
+    document.getElementById('playerName').addEventListener('change', e => {
+      const prog = loadProgress();
+      prog.playerName = e.target.value;
+      saveProgress(prog);
+    });
+  </script>
+</body>
+</html>
