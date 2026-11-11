@@ -11,7 +11,7 @@ import { ROLE_HOME, ROLE_LABELS, type UserRole } from '../types/auth'
 const ROLES: UserRole[] = ['estudiante', 'padre', 'profesional']
 
 export function LoginPage() {
-  const { user, ready, login, register, loginAsDemo } = useAuth()
+  const { user, ready, login, register } = useAuth()
   const navigate = useNavigate()
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [rol, setRol] = useState<UserRole>('estudiante')
@@ -41,19 +41,6 @@ export function LoginPage() {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No se pudo iniciar sesión')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleDemo(demoRol: UserRole) {
-    setError('')
-    setLoading(true)
-    try {
-      await loginAsDemo(demoRol)
-      navigate(ROLE_HOME[demoRol])
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al entrar con demo')
     } finally {
       setLoading(false)
     }
@@ -149,7 +136,6 @@ export function LoginPage() {
           placeholder="Mínimo 6 caracteres"
           required
           autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-          hint={mode === 'login' ? 'Las cuentas demo usan codequest' : undefined}
         />
 
         {error ? (
@@ -165,29 +151,6 @@ export function LoginPage() {
           {loading ? 'Un momento…' : mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}
         </Button>
       </form>
-
-      <div className="mt-8 border-t border-border pt-6">
-        <p className="mb-3 text-sm font-bold text-ink-muted">Entrar rápido (demo)</p>
-        <div className="grid gap-2 sm:grid-cols-3">
-          {ROLES.map((r) => (
-            <Button
-              key={r}
-              variant="ghost"
-              className="w-full !px-2 !text-sm"
-              disabled={loading}
-              onClick={() => handleDemo(r)}
-              aria-label={`Entrar como ${ROLE_LABELS[r]} demo`}
-            >
-              {ROLE_LABELS[r]}
-            </Button>
-          ))}
-        </div>
-        <p className="mt-3 text-sm text-ink-muted">
-          luna · ana · camilo
-          <br />
-          Contraseña: <strong>codequest</strong>
-        </p>
-      </div>
 
       <Link to="/" className="mt-5 inline-block font-bold text-primary no-underline hover:underline">
         Volver al inicio

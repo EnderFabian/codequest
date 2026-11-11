@@ -30,7 +30,6 @@ type AuthContextValue = {
     rol: UserRole
   }) => Promise<User>
   logout: () => void
-  loginAsDemo: (rol: UserRole) => Promise<User>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -227,33 +226,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [persistLocal],
   )
 
-  const loginAsDemo = useCallback(
-    async (rol: UserRole) => {
-      const demo = DEMO_USERS.find((u) => u.rol === rol)
-      if (!demo) throw new Error('Cuenta demo no encontrada')
-      const username = demo.email.split('@')[0]
-      try {
-        return await login(username, demo.password)
-      } catch {
-        return register({
-          nombre: demo.nombre,
-          username,
-          password: demo.password,
-          rol,
-        })
-      }
-    },
-    [login, register],
-  )
-
   const logout = useCallback(() => {
     if (supabase) void supabase.auth.signOut()
     persistLocal(null)
   }, [persistLocal])
 
   const value = useMemo(
-    () => ({ user, ready, login, register, logout, loginAsDemo }),
-    [user, ready, login, register, logout, loginAsDemo],
+    () => ({ user, ready, login, register, logout }),
+    [user, ready, login, register, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
