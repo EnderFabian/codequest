@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom'
 import { Surface } from '../components/ui/Surface'
 import { useAuth } from '../context/AuthContext'
+import { formatClock } from '../game/sessionTime'
+import { useSessionTime } from '../context/SessionTimeContext'
 
 export function PadreHomePage() {
   const { user } = useAuth()
+  const { remainingSec } = useSessionTime()
 
   return (
     <main className="mx-auto max-w-4xl px-5 py-10">
@@ -22,7 +25,7 @@ export function PadreHomePage() {
         {[
           { label: 'Estrellas', value: '12' },
           { label: 'Retos hechos', value: '4' },
-          { label: 'Tiempo esta semana', value: '48 min' },
+          { label: 'Tiempo restante', value: formatClock(remainingSec) },
         ].map((stat) => (
           <Surface key={stat.label} className="text-left">
             <p className="text-sm font-bold text-ink-muted">{stat.label}</p>

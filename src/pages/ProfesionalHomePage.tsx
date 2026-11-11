@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { AdminTimePanel } from '../components/admin/AdminTimePanel'
 import { Button } from '../components/ui/Button'
 import { Surface } from '../components/ui/Surface'
 import { useAuth } from '../context/AuthContext'
@@ -43,6 +44,8 @@ export function ProfesionalHomePage() {
           Exportar CSV
         </Button>
       </div>
+
+      <AdminTimePanel />
 
       <Surface className="mt-8 overflow-x-auto text-left" as="section">
         <h2 className="mb-4 text-xl font-extrabold text-ink">Intentos recientes</h2>

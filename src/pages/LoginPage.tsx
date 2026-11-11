@@ -11,15 +11,17 @@ import { ROLE_HOME, ROLE_LABELS, type UserRole } from '../types/auth'
 const ROLES: UserRole[] = ['estudiante', 'padre', 'profesional']
 
 export function LoginPage() {
-  const { user, login, register, loginAsDemo } = useAuth()
+  const { user, ready, login, register, loginAsDemo } = useAuth()
   const navigate = useNavigate()
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [rol, setRol] = useState<UserRole>('estudiante')
   const [nombre, setNombre] = useState('')
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  if (!ready) return null
 
   if (user) {
     return <Navigate to={ROLE_HOME[user.rol]} replace />
@@ -31,10 +33,10 @@ export function LoginPage() {
     setLoading(true)
     try {
       if (mode === 'login') {
-        const logged = await login(email, password)
+        const logged = await login(username, password)
         navigate(ROLE_HOME[logged.rol])
       } else {
-        const created = await register({ nombre, email, password, rol })
+        const created = await register({ nombre, username, password, rol })
         navigate(ROLE_HOME[created.rol])
       }
     } catch (err) {
@@ -64,7 +66,7 @@ export function LoginPage() {
         {mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}
       </h1>
       <p className="mt-2 text-ink-muted">
-        Elige tu rol y entra. También puedes usar una cuenta demo con un clic.
+        Entra con tu usuario y contraseña. El progreso se guarda y sigue en otro dispositivo.
       </p>
 
       <div className="mt-5 flex gap-2" role="tablist" aria-label="Modo de acceso">
@@ -129,14 +131,14 @@ export function LoginPage() {
         ) : null}
 
         <Input
-          label="Correo"
-          type="email"
-          name="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="tu@correo.com"
+          label="Usuario"
+          name="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="tu usuario"
           required
-          autoComplete="email"
+          autoComplete="username"
+          hint={mode === 'register' ? 'De 3 a 24 letras o números, sin espacios.' : undefined}
         />
         <Input
           label="Contraseña"
@@ -147,7 +149,7 @@ export function LoginPage() {
           placeholder="Mínimo 6 caracteres"
           required
           autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-          hint={mode === 'login' ? 'Demo: codequest' : undefined}
+          hint={mode === 'login' ? 'Las cuentas demo usan codequest' : undefined}
         />
 
         {error ? (
@@ -181,7 +183,7 @@ export function LoginPage() {
           ))}
         </div>
         <p className="mt-3 text-sm text-ink-muted">
-          luna@codequest.demo · ana@codequest.demo · camilo@codequest.demo
+          luna · ana · camilo
           <br />
           Contraseña: <strong>codequest</strong>
         </p>

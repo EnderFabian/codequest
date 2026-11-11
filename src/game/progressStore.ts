@@ -46,6 +46,7 @@ export function saveAttempt(record: AttemptRecord) {
   const all = loadAttempts()
   all.push(record)
   localStorage.setItem(ATTEMPTS_KEY, JSON.stringify(all))
+  void import('../lib/cloud').then((cloud) => cloud.pushAttempt(record))
 }
 
 export function loadProgress(estudianteId: string): StudentProgress {
@@ -67,13 +68,23 @@ export function loadProgress(estudianteId: string): StudentProgress {
   }
 }
 
-function writeProgress(progress: StudentProgress) {
+function storeProgress(progress: StudentProgress) {
   const map = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}') as Record<
     string,
     StudentProgress
   >
   map[progress.estudianteId] = progress
   localStorage.setItem(PROGRESS_KEY, JSON.stringify(map))
+}
+
+function writeProgress(progress: StudentProgress) {
+  storeProgress(progress)
+  void import('../lib/cloud').then((cloud) => cloud.pushProgress(progress))
+}
+
+/** Trae el progreso de la nube sin volver a subirlo. */
+export function replaceProgress(progress: StudentProgress) {
+  storeProgress(progress)
 }
 
 export function bumpAttemptCount(estudianteId: string, levelId: string, retoId: string) {

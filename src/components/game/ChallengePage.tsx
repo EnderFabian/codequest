@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { countTopBlocks, serializeWorkspace } from '../../blockly/serialize'
 import { getChallenge, getNextChallenge, LEVELS } from '../../data/levels'
 import { useAuth } from '../../context/AuthContext'
+import { useSessionTime } from '../../context/SessionTimeContext'
 import { useCalmMode } from '../../context/CalmModeContext'
 import {
   instructionsToStrings,
@@ -55,6 +56,7 @@ export function ChallengePage() {
   const data = getChallenge(levelId, retoId)
   const { user } = useAuth()
   const { calmMode } = useCalmMode()
+  const { expired } = useSessionTime()
   const navigate = useNavigate()
 
   const workspaceRef = useRef<WorkspaceSvg | null>(null)
@@ -120,6 +122,10 @@ export function ChallengePage() {
     }
     if (!user) {
       setError('Debes iniciar sesión para correr el reto.')
+      return
+    }
+    if (expired) {
+      setError('Se acabó el tiempo. Un administrador puede darte más.')
       return
     }
     if (lives <= 0) {
@@ -266,7 +272,7 @@ export function ChallengePage() {
         setRunning(false)
       }
     }
-  }, [user, levelId, retoId, calmMode, playAnim, lives])
+  }, [user, levelId, retoId, calmMode, playAnim, lives, expired])
 
   useEffect(() => {
     ;(window as unknown as { __cqRun?: () => void }).__cqRun = () => {
@@ -425,7 +431,7 @@ export function ChallengePage() {
               variant="primary"
               size="lg"
               onClick={() => void handleRun()}
-              disabled={running || lives <= 0}
+              disabled={running || lives <= 0 || expired}
             >
               {running ? 'Corriendo…' : '¡Correr!'}
             </Button>

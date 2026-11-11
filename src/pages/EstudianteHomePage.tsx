@@ -1,8 +1,8 @@
 import {
   Award,
   Footprints,
+  Clock,
   GitBranch,
-  Lock,
   Mountain,
   Repeat,
   Rocket,
@@ -17,6 +17,8 @@ import { Link } from 'react-router-dom'
 import { RobotAvatar } from '../components/robot/RobotAvatar'
 import { LEVELS } from '../data/levels'
 import { useAuth } from '../context/AuthContext'
+import { formatClock } from '../game/sessionTime'
+import { useSessionTime } from '../context/SessionTimeContext'
 import { isChallengeComplete, loadProgress } from '../game/progressStore'
 
 /** Aspecto de cada mundo del mapa, en el mismo orden que LEVELS. */
@@ -42,6 +44,7 @@ const CONCEPTS: Record<string, string> = {
 
 export function EstudianteHomePage() {
   const { user } = useAuth()
+  const { remainingSec } = useSessionTime()
   const progress = user ? loadProgress(user.id) : null
   const done = (levelId: string, retoId: string) =>
     !!user && isChallengeComplete(user.id, levelId, retoId)
@@ -76,8 +79,7 @@ export function EstudianteHomePage() {
               ¡Hola, {user?.nombre ?? 'explorador'}!
             </h1>
             <p className="mt-3 max-w-xl text-lg text-ink-muted">
-              Cada mundo enseña algo nuevo. Completa sus retos para ganar la insignia y abrir el
-              siguiente.
+              Todos los mundos y retos están abiertos. Entra al que quieras y gana su insignia.
             </p>
 
             <ul className="mt-5 flex flex-wrap gap-3">
@@ -85,6 +87,7 @@ export function EstudianteHomePage() {
               <StatChip icon={Zap} color="#4d96ff" label="Puntos" value={progress?.puntosTotales ?? 0} />
               <StatChip icon={Award} color="#9b72e8" label="Insignias" value={progress?.badges.length ?? 0} />
               <StatChip icon={Footprints} color="#6bcb77" label="Retos" value={`${totalDone}/${totalRetos}`} />
+              <StatChip icon={Clock} color="#2fb8b0" label="Quedan" value={formatClock(remainingSec)} />
             </ul>
 
             {next ? (
@@ -110,7 +113,7 @@ export function EstudianteHomePage() {
           Tu mapa de aventuras
         </h2>
         <p className="mt-1 text-left text-ink-muted">
-          Los mundos se abren en orden. Cada uno es un poquito más difícil que el anterior.
+          Todos los niveles están desbloqueados. Cada mundo es un poquito más difícil que el anterior.
         </p>
 
         <ol className="mt-6 grid gap-6 lg:grid-cols-2">
@@ -118,22 +121,19 @@ export function EstudianteHomePage() {
             const look = WORLD_LOOK[levelIdx % WORLD_LOOK.length]
             const Icon = look.icon
             const doneCount = level.retos.filter((r) => done(level.levelId, r.retoId)).length
-            const unlocked =
-              levelIdx === 0 ||
-              LEVELS[levelIdx - 1].retos.every((r) => done(LEVELS[levelIdx - 1].levelId, r.retoId))
             const badge = progress?.badges.includes(level.insigniaAlCompletar)
             const pct = Math.round((doneCount / level.retos.length) * 100)
 
             return (
               <li
                 key={level.levelId}
-                className={`world-card list-none ${unlocked ? '' : 'is-locked'}`}
+                className="world-card list-none"
                 style={{ '--world': look.color, '--world-soft': look.soft, '--world-ledge': look.ledge } as CSSProperties}
               >
                 <div className="world-card-inner text-left">
                   <div className="flex items-start gap-4">
                     <span className="world-icon" aria-hidden>
-                      {unlocked ? <Icon size={28} strokeWidth={2.4} /> : <Lock size={26} strokeWidth={2.4} />}
+                      <Icon size={28} strokeWidth={2.4} />
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-extrabold uppercase tracking-widest" style={{ color: look.ledge }}>
@@ -141,7 +141,7 @@ export function EstudianteHomePage() {
                       </p>
                       <h3 className="text-2xl font-extrabold text-ink">{level.levelName}</h3>
                       <p className="text-sm font-bold text-ink-muted">
-                        {unlocked ? `${doneCount} de ${level.retos.length} retos` : 'Completa el mundo anterior para entrar'}
+                        {`${doneCount} de ${level.retos.length} retos`}
                       </p>
                     </div>
                     {badge ? (
@@ -159,30 +159,21 @@ export function EstudianteHomePage() {
                   <ol className="reto-path mt-5" aria-label={`Retos de ${level.levelName}`}>
                     {level.retos.map((reto, i) => {
                       const isDone = done(level.levelId, reto.retoId)
-                      const prevDone = i === 0 ? unlocked : done(level.levelId, level.retos[i - 1].retoId)
-                      const canOpen = unlocked && (isDone || prevDone)
                       const isNext = next?.levelId === level.levelId && next.retoId === reto.retoId
-                      const node = (
-                        <span className={`reto-node ${isDone ? 'is-done' : canOpen ? 'is-open' : 'is-closed'}`}>
-                          {isDone ? <Star size={20} fill="currentColor" aria-hidden /> : reto.retoId}
-                        </span>
-                      )
                       return (
                         <li key={reto.retoId} className="relative list-none" style={{ '--i': i } as CSSProperties}>
                           {isNext ? (
                             <RobotAvatar pose="idle" size={64} followPointer={false} className="reto-robot" />
                           ) : null}
-                          {canOpen ? (
-                            <Link
-                              to={`/estudiante/reto/${level.levelId}/${reto.retoId}`}
-                              className="no-underline"
-                              aria-label={`Reto ${reto.retoId}${isDone ? ', completado' : ''}`}
-                            >
-                              {node}
-                            </Link>
-                          ) : (
-                            <span aria-label={`Reto ${reto.retoId}, bloqueado`}>{node}</span>
-                          )}
+                          <Link
+                            to={`/estudiante/reto/${level.levelId}/${reto.retoId}`}
+                            className="no-underline"
+                            aria-label={`Reto ${reto.retoId}${isDone ? ', completado' : ''}`}
+                          >
+                            <span className={`reto-node ${isDone ? 'is-done' : 'is-open'}`}>
+                              {isDone ? <Star size={20} fill="currentColor" aria-hidden /> : reto.retoId}
+                            </span>
+                          </Link>
                         </li>
                       )
                     })}

@@ -1,13 +1,16 @@
-import { Leaf, LogOut, VolumeX } from 'lucide-react'
+import { Leaf, LogOut, Timer, VolumeX } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useCalmMode } from '../../context/CalmModeContext'
+import { formatClock } from '../../game/sessionTime'
+import { useSessionTime } from '../../context/SessionTimeContext'
 import { ROLE_HOME, ROLE_LABELS } from '../../types/auth'
 import { Button } from '../ui/Button'
 
 export function Header() {
   const { calmMode, toggleCalmMode } = useCalmMode()
   const { user, logout } = useAuth()
+  const { remainingSec, warning, expired } = useSessionTime()
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-surface/90 backdrop-blur-md">
@@ -35,6 +38,23 @@ export function Header() {
             {calmMode ? <VolumeX size={18} aria-hidden /> : <Leaf size={18} aria-hidden />}
             <span className="hidden sm:inline">Modo Calma</span>
           </Button>
+
+          {user?.rol === 'estudiante' ? (
+            <span
+              className={[
+                'inline-flex min-h-10 items-center gap-1.5 rounded-2xl border-2 px-3 text-sm font-extrabold',
+                expired
+                  ? 'border-alert bg-alert-soft text-ink'
+                  : warning
+                    ? 'border-accent bg-accent-soft text-ink'
+                    : 'border-border bg-surface text-ink',
+              ].join(' ')}
+              aria-label={`Tiempo restante ${formatClock(remainingSec)}`}
+            >
+              <Timer size={16} aria-hidden />
+              {formatClock(remainingSec)}
+            </span>
+          ) : null}
 
           {user ? (
             <>

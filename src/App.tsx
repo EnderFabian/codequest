@@ -5,6 +5,8 @@ import { Header } from './components/layout/Header'
 import { RouteSky } from './components/three/RouteSky'
 import { AuthProvider } from './context/AuthContext'
 import { CalmModeProvider } from './context/CalmModeContext'
+import { SessionNotice } from './components/session/SessionNotice'
+import { SessionTimeProvider } from './context/SessionTimeContext'
 import { EstudianteHomePage } from './pages/EstudianteHomePage'
 import { LandingPage } from './pages/LandingPage'
 import { LoginPage } from './pages/LoginPage'
@@ -18,10 +20,12 @@ export default function App() {
   return (
     <CalmModeProvider>
       <AuthProvider>
+        <SessionTimeProvider>
         <Router>
           <RouteSky />
           <div className="relative z-10 flex min-h-svh flex-col">
             <Header />
+            <SessionNotice />
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/entrar" element={<LoginPage />} />
@@ -61,6 +65,7 @@ export default function App() {
             </Routes>
           </div>
         </Router>
+        </SessionTimeProvider>
       </AuthProvider>
     </CalmModeProvider>
   )
