@@ -58,6 +58,26 @@ create policy "perfil propio" on public.perfiles
   using (id = auth.uid())
   with check (id = auth.uid());
 
+create or replace function public.es_acompanante()
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from public.perfiles
+    where id = auth.uid() and rol in ('padre', 'profesional')
+  );
+$$;
+
+grant execute on function public.es_acompanante() to authenticated;
+
+drop policy if exists "estudiantes visibles para acompanantes" on public.perfiles;
+create policy "estudiantes visibles para acompanantes" on public.perfiles
+  for select to authenticated
+  using (rol = 'estudiante' and public.es_acompanante());
+
 drop policy if exists "progreso propio" on public.progreso;
 create policy "progreso propio" on public.progreso
   for all to authenticated
@@ -67,18 +87,18 @@ create policy "progreso propio" on public.progreso
 drop policy if exists "progreso visible para acompanantes" on public.progreso;
 create policy "progreso visible para acompanantes" on public.progreso
   for select to authenticated
-  using (
-    exists (
-      select 1 from public.perfiles p
-      where p.id = auth.uid() and p.rol in ('padre', 'profesional')
-    )
-  );
+  using (public.es_acompanante());
 
 drop policy if exists "intentos propios" on public.intentos;
 create policy "intentos propios" on public.intentos
   for all to authenticated
   using (usuario_id = auth.uid())
   with check (usuario_id = auth.uid());
+
+drop policy if exists "intentos visibles para acompanantes" on public.intentos;
+create policy "intentos visibles para acompanantes" on public.intentos
+  for select to authenticated
+  using (public.es_acompanante());
 
 drop policy if exists "leer limite" on public.ajuste_tiempo;
 create policy "leer limite" on public.ajuste_tiempo
