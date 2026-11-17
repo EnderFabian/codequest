@@ -65,9 +65,9 @@ export function StudentReport({ audience }: { audience: Audience }) {
   if (!insight) {
     return (
       <Surface className="mt-8 text-left">
-        <h2 className="text-xl font-extrabold text-ink">Todavía no hay un estudiante</h2>
+        <h2 className="text-xl font-extrabold text-ink">Todavía no hay un estudiante vinculado</h2>
         <p className="mt-2 text-ink-muted">
-          Cuando un niño cree su cuenta como estudiante, su avance aparecerá aquí.
+          Escribe el código del estudiante. Hasta entonces no se muestra la información de nadie.
         </p>
         {error ? <p className="mt-3 text-sm font-bold text-ink">{error}</p> : null}
       </Surface>

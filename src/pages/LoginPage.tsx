@@ -18,6 +18,7 @@ export function LoginPage() {
   const [nombre, setNombre] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [codigo, setCodigo] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -36,7 +37,7 @@ export function LoginPage() {
         const logged = await login(username, password)
         navigate(ROLE_HOME[logged.rol])
       } else {
-        const created = await register({ nombre, username, password, rol })
+        const created = await register({ nombre, username, password, rol, codigo })
         navigate(ROLE_HOME[created.rol])
       }
     } catch (err) {
@@ -114,6 +115,24 @@ export function LoginPage() {
                 ))}
               </div>
             </fieldset>
+            {rol !== 'estudiante' ? (
+              <Input
+                label="Código del estudiante"
+                name="codigo"
+                value={codigo}
+                onChange={(event) => setCodigo(event.target.value.toUpperCase())}
+                placeholder="AB12-CD34"
+                required
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+                hint={
+                  rol === 'profesional'
+                    ? 'Sin este código no verás a nadie. Después puedes agregar más estudiantes, cada uno con su código.'
+                    : 'Pídeselo al estudiante. Solo verás la información de esa cuenta.'
+                }
+              />
+            ) : null}
           </>
         ) : null}
 

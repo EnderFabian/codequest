@@ -12,10 +12,11 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react'
-import type { CSSProperties } from 'react'
+import { useState, type CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import { RobotAvatar } from '../components/robot/RobotAvatar'
 import { LEVELS } from '../data/levels'
+import { Button } from '../components/ui/Button'
 import { useAuth } from '../context/AuthContext'
 import { formatClock } from '../game/sessionTime'
 import { useSessionTime } from '../context/SessionTimeContext'
@@ -44,6 +45,7 @@ const CONCEPTS: Record<string, string> = {
 
 export function EstudianteHomePage() {
   const { user } = useAuth()
+  const [copied, setCopied] = useState(false)
   const { remainingSec } = useSessionTime()
   const progress = user ? loadProgress(user.id) : null
   const done = (levelId: string, retoId: string) =>
@@ -106,6 +108,32 @@ export function EstudianteHomePage() {
           </div>
         </div>
       </section>
+
+      {user?.codigo ? (
+        <section className="mt-6 rounded-[2rem] border-[3px] border-white/80 bg-surface p-6 text-left shadow-[var(--shadow-clay)] sm:p-8">
+          <p className="text-sm font-extrabold uppercase tracking-widest text-primary">Tu código</p>
+          <p
+            className="mt-2 font-mono text-4xl font-extrabold tracking-[0.18em] text-ink"
+            aria-label={`Tu código es ${user.codigo}`}
+          >
+            {user.codigo}
+          </p>
+          <p className="mt-3 max-w-2xl text-ink-muted">
+            Dáselo a tu familia o al profesional. Con este código ven solo tu avance y tu tiempo de juego.
+          </p>
+          <Button
+            className="mt-4"
+            variant="secondary"
+            onClick={() => {
+              void navigator.clipboard.writeText(user.codigo ?? '').then(() => {
+                setCopied(true)
+              })
+            }}
+          >
+            {copied ? 'Código copiado' : 'Copiar código'}
+          </Button>
+        </section>
+      ) : null}
 
       {/* Mapa de mundos */}
       <section className="mt-10" aria-labelledby="mapa-titulo">

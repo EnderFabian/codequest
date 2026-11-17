@@ -17,6 +17,7 @@ import {
   supabase,
   usernameToEmail,
 } from '../lib/supabase'
+import { normalizeStudentCode } from '../lib/studentCode'
 import { DEMO_USERS, type User, type UserRole } from '../types/auth'
 
 type AuthContextValue = {
@@ -28,6 +29,7 @@ type AuthContextValue = {
     username: string
     password: string
     rol: UserRole
+    codigo?: string
   }) => Promise<User>
   logout: () => void
 }
@@ -81,7 +83,7 @@ async function loadCloudUser(userId: string, fallback: { nombre?: string; rol?: 
 
   const { data } = await supabase!
     .from('perfiles')
-    .select('username, nombre, rol')
+    .select('username, nombre, rol, codigo')
     .eq('id', userId)
     .maybeSingle()
 
@@ -91,6 +93,7 @@ async function loadCloudUser(userId: string, fallback: { nombre?: string; rol?: 
     nombre: data?.nombre ?? fallback.nombre ?? 'Explorador',
     email: data?.username ?? fallback.username ?? userId,
     rol,
+    codigo: data?.codigo ?? null,
   } satisfies User
 }
 
@@ -165,7 +168,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   const register = useCallback(
-    async (data: { nombre: string; username: string; password: string; rol: UserRole }) => {
+    async (data: { nombre: string; username: string; password: string; rol: UserRole; codigo?: string }) => {
       const username = normalizeUsername(data.username)
       if (!isValidUsername(username)) {
         throw new Error('El usuario debe tener de 3 a 24 letras o números, sin espacios.')
@@ -175,6 +178,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       const nombre = data.nombre.trim()
       if (!nombre) throw new Error('Escribe tu nombre.')
+      const codigoEstudiante =
+        data.rol === 'estudiante' ? null : normalizeStudentCode(data.codigo ?? '')
+      if (data.rol !== 'estudiante' && !codigoEstudiante) {
+        throw new Error('Escribe el código de 8 letras o números que te dio el estudiante.')
+      }
 
       if (!supabase) {
         const users = readUsers()
@@ -218,6 +226,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error('La cuenta se creó, pero no se pudo guardar el perfil.')
       }
       await supabase.from('progreso').upsert({ usuario_id: created.user.id })
+
+      if (codigoEstudiante) {
+        const { error: linkError } = await supabase.rpc('vincular_por_codigo', {
+          p_codigo: codigoEstudiante,
+        })
+        if (linkError) {
+          await supabase.auth.signOut()
+          throw new Error(
+            'Ese código no corresponde a un estudiante. Tu usuario ya quedó creado: entra y escríbelo en el panel.',
+          )
+        }
+      }
 
       const next = await loadCloudUser(created.user.id, { nombre, rol: data.rol, username })
       setUser(next)

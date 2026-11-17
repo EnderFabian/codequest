@@ -6,7 +6,9 @@ export type User = {
   email: string
   rol: UserRole
   avatar?: string
-  /** Vinculación padre ↔ hijo (demo) */
+  /** Código que el estudiante comparte para que lo vinculen. */
+  codigo?: string | null
+  /** Vinculación padre ↔ hijo (demo local) */
   padreId?: string
   hijoId?: string
   profesionalId?: string

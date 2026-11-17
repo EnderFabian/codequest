@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AdminTimePanel } from '../components/admin/AdminTimePanel'
+import { LinkStudentForm } from '../components/family/LinkStudentForm'
 import { StudentReport } from '../components/family/StudentReport'
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../context/AuthContext'
@@ -7,6 +9,7 @@ import { challengeLabel, pullCompanionReport } from '../lib/companionReport'
 
 export function ProfesionalHomePage() {
   const { user } = useAuth()
+  const [revision, setRevision] = useState(0)
 
   async function exportCsv() {
     const report = await pullCompanionReport()
@@ -43,7 +46,7 @@ export function ProfesionalHomePage() {
           </p>
           <h1 className="mt-2 text-4xl font-extrabold text-ink">Hola, {user?.nombre}</h1>
           <p className="mt-3 max-w-2xl text-lg text-ink-muted">
-            Avance por habilidad, tiempo del día y partidas reales para decidir cómo apoyar.
+            Agrega a cada estudiante con su código. Puedes verlos a todos, pero solo después de escribir el código. Sin él, no aparece nadie.
           </p>
         </div>
         <Button variant="secondary" onClick={() => void exportCsv()} aria-label="Exportar el avance a CSV">
@@ -51,7 +54,8 @@ export function ProfesionalHomePage() {
         </Button>
       </div>
 
-      <StudentReport audience="profesional" />
+      <LinkStudentForm audience="profesional" onLinked={() => setRevision((value) => value + 1)} />
+      <StudentReport key={revision} audience="profesional" />
       <AdminTimePanel />
 
       <Link to="/" className="mt-8 inline-block font-bold text-primary no-underline hover:underline">
