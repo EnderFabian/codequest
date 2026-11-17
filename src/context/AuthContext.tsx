@@ -83,7 +83,7 @@ async function loadCloudUser(userId: string, fallback: { nombre?: string; rol?: 
 
   const { data } = await supabase!
     .from('perfiles')
-    .select('username, nombre, rol, codigo')
+    .select('username, nombre, rol, codigo, acceso_libre')
     .eq('id', userId)
     .maybeSingle()
 
@@ -94,6 +94,7 @@ async function loadCloudUser(userId: string, fallback: { nombre?: string; rol?: 
     email: data?.username ?? fallback.username ?? userId,
     rol,
     codigo: data?.codigo ?? null,
+    accesoLibre: Boolean(data?.acceso_libre),
   } satisfies User
 }
 

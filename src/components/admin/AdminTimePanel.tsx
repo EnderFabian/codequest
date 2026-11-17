@@ -28,7 +28,7 @@ export function AdminTimePanel() {
       <p className="text-sm font-extrabold uppercase tracking-widest text-primary">Administrador</p>
       <h2 className="mt-2 text-2xl font-extrabold text-ink">Límite de tiempo</h2>
       <p className="mt-2 max-w-2xl text-ink-muted">
-        En pruebas todos los niveles están abiertos. El estudiante puede estar como máximo{' '}
+        Las cuentas ya creadas tienen todos los retos abiertos. Las nuevas empiezan en el 1.1. El estudiante puede estar como máximo{' '}
         <strong className="text-ink">{formatMinutes(limitMin)}</strong>. A los 5 minutos aparece un
         aviso y, al llegar a cero, el juego se pausa.
       </p>

@@ -8,8 +8,11 @@ create table if not exists public.perfiles (
   username text unique not null,
   nombre text not null,
   rol text not null check (rol in ('estudiante', 'padre', 'profesional')),
-  codigo text
+  codigo text,
+  acceso_libre boolean not null default false
 );
+
+alter table public.perfiles add column if not exists acceso_libre boolean not null default false;
 
 alter table public.perfiles add column if not exists codigo text;
 create unique index if not exists perfiles_codigo_unico on public.perfiles (codigo) where codigo is not null;

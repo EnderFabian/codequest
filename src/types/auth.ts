@@ -8,6 +8,8 @@ export type User = {
   avatar?: string
   /** Código que el estudiante comparte para que lo vinculen. */
   codigo?: string | null
+  /** Cuentas creadas antes del avance por orden conservan todos los retos abiertos. */
+  accesoLibre?: boolean
   /** Vinculación padre ↔ hijo (demo local) */
   padreId?: string
   hijoId?: string
@@ -34,6 +36,7 @@ export const DEMO_USERS: Array<User & { password: string }> = [
     email: 'luna@codequest.demo',
     password: 'codequest',
     rol: 'estudiante',
+    accesoLibre: true,
     avatar: '🌙',
     padreId: 'padre-1',
     profesionalId: 'pro-1',

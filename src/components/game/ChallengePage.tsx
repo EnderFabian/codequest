@@ -22,6 +22,7 @@ import {
   saveAttempt,
 } from '../../game/progressStore'
 import { boardThemeForLevel } from '../../game/boardThemes'
+import { isRetoUnlocked } from '../../game/unlock'
 import { countProgramBlocks, estimateOptimalBlocks, scoreFromBlocks } from '../../game/scoring'
 import type { StepResult, Tile } from '../../game/types'
 import { RobotAvatar } from '../robot/RobotAvatar'
@@ -284,6 +285,20 @@ export function ChallengePage() {
     return (
       <main className="mx-auto max-w-3xl px-5 py-12 text-left">
         <h1 className="text-3xl font-extrabold text-ink">Reto no encontrado</h1>
+        <Link to="/estudiante" className="mt-4 inline-block font-bold text-primary">
+          Volver al mapa
+        </Link>
+      </main>
+    )
+  }
+
+  if (user && !isRetoUnlocked(user.id, levelId, retoId, Boolean(user.accesoLibre))) {
+    return (
+      <main className="mx-auto max-w-3xl px-5 py-12 text-left">
+        <h1 className="text-3xl font-extrabold text-ink">Este reto todavía está cerrado</h1>
+        <p className="mt-3 text-lg text-ink-muted">
+          Termina el reto anterior. Cuando lo logres, este se abre solo.
+        </p>
         <Link to="/estudiante" className="mt-4 inline-block font-bold text-primary">
           Volver al mapa
         </Link>

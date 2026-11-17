@@ -21,6 +21,7 @@ import { useAuth } from '../context/AuthContext'
 import { formatClock } from '../game/sessionTime'
 import { useSessionTime } from '../context/SessionTimeContext'
 import { isChallengeComplete, loadProgress } from '../game/progressStore'
+import { isRetoUnlocked } from '../game/unlock'
 
 /** Aspecto de cada mundo del mapa, en el mismo orden que LEVELS. */
 const WORLD_LOOK: { color: string; soft: string; ledge: string; icon: LucideIcon }[] = [
@@ -48,8 +49,11 @@ export function EstudianteHomePage() {
   const [copied, setCopied] = useState(false)
   const { remainingSec } = useSessionTime()
   const progress = user ? loadProgress(user.id) : null
+  const accesoLibre = Boolean(user?.accesoLibre)
   const done = (levelId: string, retoId: string) =>
     !!user && isChallengeComplete(user.id, levelId, retoId)
+  const open = (levelId: string, retoId: string) =>
+    !!user && isRetoUnlocked(user.id, levelId, retoId, accesoLibre)
 
   const totalRetos = LEVELS.reduce((n, l) => n + l.retos.length, 0)
   const totalDone = LEVELS.reduce(
@@ -81,7 +85,9 @@ export function EstudianteHomePage() {
               ¡Hola, {user?.nombre ?? 'explorador'}!
             </h1>
             <p className="mt-3 max-w-xl text-lg text-ink-muted">
-              Todos los mundos y retos están abiertos. Entra al que quieras y gana su insignia.
+              {accesoLibre
+                ? 'Todos los mundos y retos están abiertos. Entra al que quieras y gana su insignia.'
+                : 'Empieza por el reto 1.1. Cuando lo termines, se abre el siguiente.'}
             </p>
 
             <ul className="mt-5 flex flex-wrap gap-3">
@@ -141,7 +147,9 @@ export function EstudianteHomePage() {
           Tu mapa de aventuras
         </h2>
         <p className="mt-1 text-left text-ink-muted">
-          Todos los niveles están desbloqueados. Cada mundo es un poquito más difícil que el anterior.
+          {accesoLibre
+            ? 'Todos los niveles están desbloqueados. Cada mundo es un poquito más difícil que el anterior.'
+            : 'Los retos en gris están cerrados. Completa el anterior para abrir el que sigue.'}
         </p>
 
         <ol className="mt-6 grid gap-6 lg:grid-cols-2">
@@ -151,11 +159,12 @@ export function EstudianteHomePage() {
             const doneCount = level.retos.filter((r) => done(level.levelId, r.retoId)).length
             const badge = progress?.badges.includes(level.insigniaAlCompletar)
             const pct = Math.round((doneCount / level.retos.length) * 100)
+            const worldOpen = level.retos.some((r) => open(level.levelId, r.retoId))
 
             return (
               <li
                 key={level.levelId}
-                className="world-card list-none"
+                className={`world-card list-none${worldOpen ? '' : ' is-locked'}`}
                 style={{ '--world': look.color, '--world-soft': look.soft, '--world-ledge': look.ledge } as CSSProperties}
               >
                 <div className="world-card-inner text-left">
@@ -185,23 +194,35 @@ export function EstudianteHomePage() {
                   </div>
 
                   <ol className="reto-path mt-5" aria-label={`Retos de ${level.levelName}`}>
-                    {level.retos.map((reto, i) => {
+                    {level.retos.map((reto) => {
                       const isDone = done(level.levelId, reto.retoId)
+                      const isOpen = open(level.levelId, reto.retoId)
                       const isNext = next?.levelId === level.levelId && next.retoId === reto.retoId
                       return (
-                        <li key={reto.retoId} className="relative list-none" style={{ '--i': i } as CSSProperties}>
-                          {isNext ? (
+                        <li key={reto.retoId} className="relative list-none">
+                          {isNext && isOpen ? (
                             <RobotAvatar pose="idle" size={64} followPointer={false} className="reto-robot" />
                           ) : null}
-                          <Link
-                            to={`/estudiante/reto/${level.levelId}/${reto.retoId}`}
-                            className="no-underline"
-                            aria-label={`Reto ${reto.retoId}${isDone ? ', completado' : ''}`}
-                          >
-                            <span className={`reto-node ${isDone ? 'is-done' : 'is-open'}`}>
-                              {isDone ? <Star size={20} fill="currentColor" aria-hidden /> : reto.retoId}
+                          {isOpen ? (
+                            <Link
+                              to={`/estudiante/reto/${level.levelId}/${reto.retoId}`}
+                              className="no-underline"
+                              aria-label={`Reto ${reto.retoId}${isDone ? ', completado' : ''}`}
+                            >
+                              <span className={`reto-node ${isDone ? 'is-done' : 'is-open'}`}>
+                                {isDone ? <Star size={20} fill="currentColor" aria-hidden /> : reto.retoId}
+                              </span>
+                            </Link>
+                          ) : (
+                            <span
+                              className="reto-node is-closed"
+                              aria-disabled="true"
+                              title="Termina el reto anterior para abrir este."
+                            >
+                              <span className="sr-only">Cerrado. </span>
+                              {reto.retoId}
                             </span>
-                          </Link>
+                          )}
                         </li>
                       )
                     })}
